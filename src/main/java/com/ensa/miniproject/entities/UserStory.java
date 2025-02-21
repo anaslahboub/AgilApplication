@@ -16,8 +16,11 @@ public class UserStory {
     private Long id;
     private String title;
     private String description;
-    private int priority;
+    private String priority;
     @ManyToOne
     private ProductBacklog productBacklog;
+
+    @ManyToOne(optional = true)
+    private Epic epic;
 
 }
