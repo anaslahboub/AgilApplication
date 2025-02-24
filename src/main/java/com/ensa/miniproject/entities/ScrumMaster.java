@@ -11,5 +11,5 @@ public class ScrumMaster extends User{
     @Id
     private Long id;
     @OneToMany
-    List<Project> projects;
+    List<Project> projects; 
 }

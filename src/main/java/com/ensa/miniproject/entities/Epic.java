@@ -3,6 +3,9 @@ package com.ensa.miniproject.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 
 @Entity
 public class Epic {
@@ -13,5 +16,8 @@ public class Epic {
 
     @ManyToOne
     private ProductBacklog productBacklog;
+
+    @OneToMany
+    List<UserStory> userStories;
 
 }

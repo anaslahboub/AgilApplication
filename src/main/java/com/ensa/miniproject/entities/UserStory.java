@@ -16,7 +16,6 @@ public class UserStory {
     private Long id;
     private String title;
     private String description;
-    private int priority;
     @ManyToOne
     private ProductBacklog productBacklog;
 

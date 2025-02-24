@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -27,5 +28,7 @@ public class Project {
     private ScrumMaster scrumMaster;
     @ManyToOne
     private EquipeDevelopement equipeDevelopement;
+    @OneToMany
+    private List<ProductBacklog> productBacklogs;
 
 }

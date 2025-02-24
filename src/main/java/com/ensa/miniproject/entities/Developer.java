@@ -11,8 +11,10 @@ import java.util.List;
 public class Developer extends User{
     @Id
     private Long id;
+
     @ManyToOne
     private EquipeDevelopement equipeDevelopement;
+
     @OneToMany
     List<Project> projects;
 }
