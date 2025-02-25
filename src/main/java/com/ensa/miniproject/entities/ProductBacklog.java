@@ -1,9 +1,8 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,15 +15,27 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductBacklog {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
-    private String status;
-    private int priority;
-    @OneToMany
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Priorite priority;
+
+    @OneToMany(mappedBy = "productBacklog")
+    @JsonManagedReference
     private List<Epic> epics;
-    @OneToMany
+
+
+    @OneToMany(mappedBy = "productBacklog")
+    @JsonBackReference
     private List<UserStory> userStories;
+
     @ManyToOne
+    @JsonBackReference
     private Project project;
 }

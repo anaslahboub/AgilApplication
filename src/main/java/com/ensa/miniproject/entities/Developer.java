@@ -1,18 +1,23 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Developer extends User{
-    @Id
-    private Long id;
+
     @ManyToOne
+    @JsonBackReference
     private EquipeDevelopement equipeDevelopement;
-    @OneToMany
-    List<Project> projects;
+
+    @ManyToMany
+    private List<Project> projects;
 }

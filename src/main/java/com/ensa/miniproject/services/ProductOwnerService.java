@@ -11,21 +11,22 @@ public interface ProductOwnerService {
     ///  CRUD METHAUDE  FOR PROJECT ENTITY///
     public Project addProject(Project project);
     public Project updateProject(Project project);
-    public Project getProject(Long id);
+    public Project getProjectById(Long id);
     public List<Project> getProjects();
     public void deleteProject(Long id);
 
     /// CRUD METHAUDE FOR PRODUCT OWNER
     public ProductOwner addProductOwner(ProductOwner productOwner);
     public ProductOwner updateProductOwner(ProductOwner productOwner);
-    public ProductOwner getProductOwner(Long id);
+    public ProductOwner getProductOwnerById(Long id);
     public List<ProductOwner> getProductOwners();
+    public void deleteProductOwner(Long id);
 
     /// product backlog crud
 
     public ProductBacklog addProductBacklog(ProductBacklog productBacklog);
     public ProductBacklog updateProductBacklog(ProductBacklog productBacklog);
-    public ProductBacklog getProductBacklog(Long id);
+    public ProductBacklog getProductBacklogById(Long id);
     public List<ProductBacklog> getProductBacklogs();
     public void deleteProductBacklog(Long id);
 
