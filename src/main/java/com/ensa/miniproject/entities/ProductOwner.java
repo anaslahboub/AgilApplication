@@ -1,15 +1,21 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class ProductOwner extends User{
-    @id
-    private Long id;
+
     @OneToMany
+    @JsonBackReference
     List<Project> projects;
 }

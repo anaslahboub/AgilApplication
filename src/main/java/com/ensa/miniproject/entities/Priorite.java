@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 
 @Getter
+
 public enum Priorite {
     MUST_HAVE("Must Have", 1),
     SHOULD_HAVE("Should Have", 2),
