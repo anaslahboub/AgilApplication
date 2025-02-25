@@ -1,17 +1,23 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class EquipeDevelopement {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
-    private  List<Developer> developers;
 
-
+    @OneToMany(mappedBy = "equipeDevelopement")
+    @JsonManagedReference
+    private List<Developer> developers;
 }
+

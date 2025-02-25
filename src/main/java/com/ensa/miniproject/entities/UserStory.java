@@ -1,8 +1,8 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserStory {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Priorite priority;
+
     @ManyToOne
+    @JsonBackReference
     private ProductBacklog productBacklog;
+
+    @ManyToOne(optional = true)
+    private Epic epic;
 
 }
