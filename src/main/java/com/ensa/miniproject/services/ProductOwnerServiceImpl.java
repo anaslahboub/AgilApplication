@@ -30,7 +30,7 @@ public class ProductOwnerServiceImpl implements ProductOwnerService {
 
     @Override
     public Project addProject(Project project) {
-        if (project .getDateDebut().isAfter(project.getDateFin())) {
+        if (project.getDateDebut().isAfter(project.getDateFin())) {
             throw new InvalidDateException("la date debut doit etre inf a date fin ");
         }
         else{
@@ -116,14 +116,12 @@ public class ProductOwnerServiceImpl implements ProductOwnerService {
     @Override
     @Transactional
     public void affectBacklogToProject(Long idProject, ProductBacklog productBacklog) {
-        Project project = this.getProjectById(idProject);
-        project.getProductBacklogs().add(productBacklog);
     }
 
     @Override
     @Transactional
     public void affectProjrctToBacklog(ProductBacklog backlog, Project project) {
-        backlog.setProject(project);
+        project.setProductBacklog(backlog);
     }
 
     //    public void assignBacklogToProject(Long projectId, Long backlogId) {

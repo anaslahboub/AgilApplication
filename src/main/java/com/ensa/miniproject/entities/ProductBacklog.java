@@ -35,7 +35,5 @@ public class ProductBacklog {
     @JsonBackReference
     private List<UserStory> userStories;
 
-    @ManyToOne
-    @JsonBackReference
-    private Project project;
+
 }
