@@ -39,8 +39,7 @@ public class Project {
     private EquipeDevelopement equipeDevelopement;
 
 
-    @OneToMany
-    @JsonManagedReference
-    private List<ProductBacklog> productBacklogs;
+    @OneToOne
+    private ProductBacklog productBacklog;
 
 }

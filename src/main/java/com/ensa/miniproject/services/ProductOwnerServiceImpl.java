@@ -117,7 +117,8 @@ public class ProductOwnerServiceImpl implements ProductOwnerService {
     @Transactional
     public void affectBacklogToProject(Long idProject, ProductBacklog productBacklog) {
         Project project = this.getProjectById(idProject);
-        project.getProductBacklogs().add(productBacklog);
+        project.setProductBacklog(productBacklog);
+        productBacklog.setProject(project);
     }
 
     @Override
