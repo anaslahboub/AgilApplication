@@ -29,8 +29,6 @@ public class Project {
     @JsonManagedReference
     private EquipeDevelopement equipeDevelopement;
 
-    @OneToMany
-    private List<ProductBacklog> productBacklogs;
 
     @OneToOne
     private ProductBacklog productBacklog;

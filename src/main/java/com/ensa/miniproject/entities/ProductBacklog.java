@@ -34,6 +34,4 @@ public class ProductBacklog {
     @OneToMany(mappedBy = "productBacklog")
     @JsonBackReference
     private List<UserStory> userStories;
-
-
 }

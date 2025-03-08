@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class ProductOwnerServiceImplTest {
+class ProductOwnerDTPServiceImplTest {
 
     @Mock
     private ProjectRepository projectRepository;
@@ -43,7 +43,7 @@ class ProductOwnerServiceImplTest {
         project2 = new Project();
         project2.setId(2L);
         project2.setDateDebut(LocalDate.of(2024, 3, 1));
-        project2.setDateFin(LocalDate.of(2024, 6, 1));
+        project2.setDateFin(LocalDate.of(2024, 1, 1));
     }
 
     @AfterEach
