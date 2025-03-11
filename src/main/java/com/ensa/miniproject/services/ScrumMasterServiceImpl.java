@@ -7,7 +7,8 @@ import com.ensa.miniproject.entities.UserStory;
 
 import java.util.List;
 
-public class ScrumMasterServiceImpl implements ScrumMasterService {
+public class
+ScrumMasterServiceImpl implements ScrumMasterService {
     @Override
     public ScrumMaster createScrumMaster(ScrumMaster scrumMaster) {
         return null;

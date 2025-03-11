@@ -1,5 +1,6 @@
 package com.ensa.miniproject.services;
 
+import com.ensa.miniproject.DTO.*;
 import com.ensa.miniproject.entities.ProductBacklog;
 import com.ensa.miniproject.entities.ProductOwner;
 import com.ensa.miniproject.entities.Project;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductOwnerServiceImpl implements ProductOwnerService {
 
@@ -29,102 +32,118 @@ public class ProductOwnerServiceImpl implements ProductOwnerService {
 
 
     @Override
-    public Project addProject(Project project) {
+    public ProjectRespDTO addProject(ProjectCreateDTO projectDTO) {
+        Project project = projectDTO.toEntity();
         if (project .getDateDebut().isAfter(project.getDateFin())) {
             throw new InvalidDateException("la date debut doit etre inf a date fin ");
         }
         else{
-        return projectRepository.save(project) ;
+        return ProjectRespDTO.toProjectRespDTO(projectRepository.save(project));
         }
     }
 
     @Override
-    public Project updateProject(Project project) {
+    public ProjectRespDTO updateProject(ProjectRespDTO projectDTO) {
+        Project project = projectDTO.toEntity();
         if (project.getDateDebut().isAfter(project.getDateFin())) {
             throw new InvalidDateException("la date debut doit etre inf a date fin ");
         }
         else{
-        return projectRepository.save(project) ;
+        return ProjectRespDTO.toProjectRespDTO(projectRepository.save(project));
         }
     }
 
     @Override
-    public Project getProjectById(Long id) {
-        return projectRepository.findById(id)
+    public ProjectRespDTO getProjectById(Long id) {
+        Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Projet avec ID " + id + " non trouvé"));
+        return ProjectRespDTO.toProjectRespDTO(project);
     }
 
     @Override
-    public List<Project> getProjects() {
-        return projectRepository.findAll();
+    public List<ProjectRespDTO> getProjects() {
+        return projectRepository.findAll().stream().map(ProjectRespDTO::toProjectRespDTO).collect(Collectors.toList());
     }
 
     @Override
     public void deleteProject(Long id) {
-    projectRepository.deleteById(id);
+        if (!projectRepository.existsById(id)) {
+            throw new EntityNotFoundException("Projet avec ID " + id + " non trouvé");
+        }
+        projectRepository.deleteById(id);
     }
 
     @Override
-    public ProductOwner addProductOwner(ProductOwner productOwner) {
-        return productOwnerRepository.save(productOwner);
+    public ProductOwnerRespDTO addProductOwner(ProductOwnerCreateDTO productOwnerDTO) {
+        ProductOwner productOwner = productOwnerDTO.toEntity();
+        return ProductOwnerRespDTO.toProductOwnerRespDTO(productOwnerRepository.save(productOwner));
     }
 
     @Override
-    public ProductOwner updateProductOwner(ProductOwner productOwner) {
-        return productOwnerRepository.save(productOwner);
+    public ProductOwnerRespDTO updateProductOwner(ProductOwnerRespDTO productOwnerDTO) {
+        ProductOwner productOwner = productOwnerDTO.toEntity();
+        return ProductOwnerRespDTO.toProductOwnerRespDTO(productOwnerRepository.save(productOwner));
     }
 
     @Override
-    public ProductOwner getProductOwnerById(Long id) {
-        return productOwnerRepository.getProductOwnerById(id);
+    public ProductOwnerRespDTO getProductOwnerById(Long id) {
+        return ProductOwnerRespDTO.toProductOwnerRespDTO(productOwnerRepository.getProductOwnerById(id));
     }
 
     @Override
-    public List<ProductOwner> getProductOwners() {
-        return productOwnerRepository.findAll();
+    public List<ProductOwnerRespDTO> getProductOwners() {
+        return productOwnerRepository.findAll().
+                stream().map(ProductOwnerRespDTO::toProductOwnerRespDTO).collect(Collectors.toList());
     }
     @Override
     public void deleteProductOwner(Long id){
+        if (!productOwnerRepository.existsById(id)) {
+            throw new EntityNotFoundException("productOwner avec ID " + id + " non trouvé");
+        }
         productOwnerRepository.deleteById(id);
     }
 
     @Override
-    public ProductBacklog addProductBacklog(ProductBacklog productBacklog) {
-        return productBacklogRepository.save(productBacklog);
+    public ProductBackLogRespDTO addProductBacklog(ProductBackLogCreateDTO productBackLogCreateDTO) {
+        ProductBacklog productBacklog = productBackLogCreateDTO.toEntity();
+        return ProductBackLogRespDTO.toProductBackLogRespDTO(productBacklogRepository.save(productBacklog));
     }
 
     @Override
-    public ProductBacklog updateProductBacklog(ProductBacklog productBacklog) {
-        return productBacklogRepository.save(productBacklog);
+    public ProductBackLogRespDTO updateProductBacklog(ProductBackLogRespDTO productBackLogRespDTO) {
+        ProductBacklog productBacklog = productBackLogRespDTO.toEntity();
+        return ProductBackLogRespDTO.toProductBackLogRespDTO(productBacklogRepository.save(productBacklog));
     }
 
     @Override
-    public ProductBacklog getProductBacklogById(Long id) {
-        return productBacklogRepository.findById(id).orElseThrow(()->new EntityNotFoundException("ce product backlog nexiste pas"));
+    public ProductBackLogRespDTO getProductBacklogById(Long id) {
+        ProductBacklog productBacklog = productBacklogRepository.findById(id).orElseThrow(()->new EntityNotFoundException("ce product backlog nexiste pas"));
+        return ProductBackLogRespDTO.toProductBackLogRespDTO(productBacklogRepository.getProductBacklogById(id));
     }
 
     @Override
-    public List<ProductBacklog> getProductBacklogs() {
-        return productBacklogRepository.findAll();
+    public List<ProductBackLogRespDTO> getProductBacklogs() {
+        return productBacklogRepository.findAll()
+                .stream().map(ProductBackLogRespDTO::toProductBackLogRespDTO).collect(Collectors.toList());
     }
 
     @Override
     public void deleteProductBacklog(Long id) {
+        if (!productBacklogRepository.existsById(id)) {
+            throw new EntityNotFoundException("lr product backlog qii contient cette ID " + id + "n'existe pas ");
+        }
         productBacklogRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public void affectBacklogToProject(Long idProject, ProductBacklog productBacklog) {
-        Project project = this.getProjectById(idProject);
-        project.setProductBacklog(productBacklog);
-        productBacklog.setProject(project);
+
     }
 
     @Override
     @Transactional
     public void affectProjrctToBacklog(ProductBacklog backlog, Project project) {
-        backlog.setProject(project);
     }
 
     //    public void assignBacklogToProject(Long projectId, Long backlogId) {
