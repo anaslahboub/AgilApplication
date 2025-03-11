@@ -10,6 +10,6 @@ import org.mapstruct.factory.Mappers;
 public interface ProductBacklogMapper {
     ProductBacklogMapper INSTANCE = Mappers.getMapper(ProductBacklogMapper.class);
 
-    ProductOwnerDTO fromEntity(ProductBacklog productBacklog);
+    ProductBacklogDTO fromEntity(ProductBacklog productBacklog);
     ProductBacklog toEntity(ProductBacklogDTO productBacklogDTO);
 }

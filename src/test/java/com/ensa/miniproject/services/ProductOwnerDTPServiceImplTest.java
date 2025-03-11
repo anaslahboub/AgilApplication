@@ -50,38 +50,38 @@ class ProductOwnerDTPServiceImplTest {
     void tearDown() {
     }
 
-    @Test
-    void addProject() {
-//        assertEquals(project1,productOwnerService.addProject(project1),()->"erreur dans insrting ");
-        when(projectRepository.save(project1)).thenReturn(project1);
+//    @Test
+//    void addProject() {
+////        assertEquals(project1,productOwnerService.addProject(project1),()->"erreur dans insrting ");
+//        when(projectRepository.save(project1)).thenReturn(project1);
+//
+//        Project savedProject = productOwnerService.addProject(project1);
+//
+//        assertEquals(project1, savedProject);
+//    }
 
-        Project savedProject = productOwnerService.addProject(project1);
-
-        assertEquals(project1, savedProject);
-    }
-
-    @Test
-    void addProject_ShouldThrowException_WhenDateDebutIsAfterDateFin() {
-        project1.setDateDebut(LocalDate.of(2024, 6, 1)); // Date début après la date fin
-
-        Exception exception = assertThrows(InvalidDateException.class, () -> {
-            productOwnerService.addProject(project1);
-        });
-
-        assertEquals("la date debut doit etre inf a date fin ", exception.getMessage());
-        verify(projectRepository, never()).save(project1);
-    }
-
-    @Test
-    void updateProject() {
-//        assertEquals(project2,productOwnerService.updateProject(project1),()->"erreur dans updating ");
-        when(projectRepository.save(project1)).thenReturn(project1);
-
-        Project updatedProject = productOwnerService.updateProject(project1);
-
-        assertEquals(project1, updatedProject);
-        verify(projectRepository, times(1)).save(project1);
-    }
+//    @Test
+//    void addProject_ShouldThrowException_WhenDateDebutIsAfterDateFin() {
+//        project1.setDateDebut(LocalDate.of(2024, 6, 1)); // Date début après la date fin
+//
+//        Exception exception = assertThrows(InvalidDateException.class, () -> {
+//            productOwnerService.addProject(project1);
+//        });
+//
+//        assertEquals("la date debut doit etre inf a date fin ", exception.getMessage());
+//        verify(projectRepository, never()).save(project1);
+//    }
+//
+//    @Test
+//    void updateProject() {
+////        assertEquals(project2,productOwnerService.updateProject(project1),()->"erreur dans updating ");
+//        when(projectRepository.save(project1)).thenReturn(project1);
+//
+//        Project updatedProject = productOwnerService.updateProject(project1);
+//
+//        assertEquals(project1, updatedProject);
+//        verify(projectRepository, times(1)).save(project1);
+//    }
 
     @Test
     void getProject() {

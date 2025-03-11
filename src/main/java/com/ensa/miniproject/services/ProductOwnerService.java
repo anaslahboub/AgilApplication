@@ -1,44 +1,35 @@
 package com.ensa.miniproject.services;
 
-import com.ensa.miniproject.entities.ProductBacklog;
-import com.ensa.miniproject.entities.ProductOwner;
-import com.ensa.miniproject.entities.Project;
+import com.ensa.miniproject.DTO.ProductBacklogDTO;
+import com.ensa.miniproject.DTO.ProductOwnerDTO;
+import com.ensa.miniproject.DTO.ProjectDTO;
 
 import java.util.List;
 
 public interface ProductOwnerService {
 
-    ///  CRUD METHAUDE  FOR PROJECT ENTITY///
-    public Project addProject(Project project);
-    public Project updateProject(Project project);
-    public Project getProjectById(Long id);
-    public List<Project> getProjects();
-    public void deleteProject(Long id);
+    ///  CRUD METHODS FOR PROJECT ///
+    ProjectDTO addProject(ProjectDTO projectDTO);
+    ProjectDTO updateProject(ProjectDTO projectDTO);
+    ProjectDTO getProjectById(Long id);
+    List<ProjectDTO> getProjects();
+    void deleteProject(Long id);
 
-    /// CRUD METHAUDE FOR PRODUCT OWNER
-    public ProductOwner addProductOwner(ProductOwner productOwner);
-    public ProductOwner updateProductOwner(ProductOwner productOwner);
-    public ProductOwner getProductOwnerById(Long id);
-    public List<ProductOwner> getProductOwners();
-    public void deleteProductOwner(Long id);
+    /// CRUD METHODS FOR PRODUCT OWNER ///
+    ProductOwnerDTO addProductOwner(ProductOwnerDTO productOwnerDTO);
+    ProductOwnerDTO updateProductOwner(ProductOwnerDTO productOwnerDTO);
+    ProductOwnerDTO getProductOwnerById(Long id);
+    List<ProductOwnerDTO> getProductOwners();
+    void deleteProductOwner(Long id);
 
-    /// product backlog crud
+    /// CRUD METHODS FOR PRODUCT BACKLOG ///
+    ProductBacklogDTO addProductBacklog(ProductBacklogDTO productBacklogDTO);
+    ProductBacklogDTO updateProductBacklog(ProductBacklogDTO productBacklogDTO);
+    ProductBacklogDTO getProductBacklogById(Long id);
+    List<ProductBacklogDTO> getProductBacklogs();
+    void deleteProductBacklog(Long id);
 
-    public ProductBacklog addProductBacklog(ProductBacklog productBacklog);
-    public ProductBacklog updateProductBacklog(ProductBacklog productBacklog);
-    public ProductBacklog getProductBacklogById(Long id);
-    public List<ProductBacklog> getProductBacklogs();
-    public void deleteProductBacklog(Long id);
-
-
-
-
-    public void affectBacklogToProject(Long idProduct, ProductBacklog productBacklog);
-    public void affectProjrctToBacklog(ProductBacklog backlog, Project project);
-
-
-
-
+    /// ADDITIONAL METHODS ///
+    void affectBacklogToProject(Long idProject, ProductBacklogDTO productBacklogDTO);
+    void affectProjectToBacklog(ProductBacklogDTO backlogDTO, ProjectDTO projectDTO);
 }
-
-
