@@ -7,6 +7,9 @@ import com.ensa.miniproject.entities.Epic;
 import com.ensa.miniproject.entities.Priorite;
 import com.ensa.miniproject.entities.ScrumMaster;
 import com.ensa.miniproject.entities.UserStory;
+import com.ensa.miniproject.mapping.EpicMapper;
+import com.ensa.miniproject.mapping.ScrumMasterMapper;
+import com.ensa.miniproject.mapping.UserStoryMapper;
 import com.ensa.miniproject.repository.EpicRepository;
 import com.ensa.miniproject.repository.ScrumMasterRepository;
 import com.ensa.miniproject.repository.UserStoryRepository;
@@ -16,33 +19,44 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScrumMasterServiceImpl implements ScrumMasterService {
     private final ScrumMasterRepository scrumMasterRepository;
     private final UserStoryRepository userStoryRepository;
     private final EpicRepository epicRepository;
+    private final ScrumMasterMapper scrumMasterMapper;
+    private final UserStoryMapper userStoryMapper;
+    private final EpicMapper epicMapper;
+
 
     public ScrumMasterServiceImpl(ScrumMasterRepository scrumMasterRepository,
                                   UserStoryRepository userStoryRepository,
-                                  EpicRepository epicRepository) {
+                                  EpicRepository epicRepository,
+                                  ScrumMasterMapper scrumMasterMapper,
+                                  UserStoryMapper userStoryMapper,
+                                  EpicMapper epicMapper) {
         this.scrumMasterRepository = scrumMasterRepository;
         this.userStoryRepository = userStoryRepository;
         this.epicRepository = epicRepository;
+        this.scrumMasterMapper = scrumMasterMapper;
+        this.userStoryMapper = userStoryMapper;
+        this.epicMapper = epicMapper;
     }
 
     @Override
     public ScrumMasterDTO createScrumMaster(ScrumMasterDTO scrumMasterDTO) {
-        ScrumMaster scrumMaster = scrumMasterDTO.toEntity();
+        ScrumMaster scrumMaster = ScrumMasterMapper.INSTANCE.toEntity(scrumMasterDTO);
         scrumMaster = scrumMasterRepository.save(scrumMaster);
-        return ScrumMasterDTO.fromEntity(scrumMaster);
+        return ScrumMasterMapper.INSTANCE.fromEntity(scrumMaster);
     }
 
     @Override
     public ScrumMasterDTO getScrumMasterById(Long id) {
         ScrumMaster scrumMaster = scrumMasterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No ScrumMaster found with id: " + id));
-        return ScrumMasterDTO.fromEntity(scrumMaster);
+        return ScrumMasterMapper.INSTANCE.fromEntity(scrumMaster);
     }
 
     @Override
@@ -59,7 +73,7 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
 
         // Save the updated entity
         existingScrumMaster = scrumMasterRepository.save(existingScrumMaster);
-        return ScrumMasterDTO.fromEntity(existingScrumMaster);
+        return ScrumMasterMapper.INSTANCE.fromEntity(existingScrumMaster);
     }
 
     @Override
@@ -71,26 +85,24 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
 
     @Override
     public List<ScrumMasterDTO> getScrumMasters() {
-        List<ScrumMaster> scrumMasters = scrumMasterRepository.findAll();
-        List<ScrumMasterDTO> scrumMasterDTOs = new ArrayList<>();
-        for (ScrumMaster scrumMaster : scrumMasters) {
-            scrumMasterDTOs.add(ScrumMasterDTO.fromEntity(scrumMaster));
-        }
-        return scrumMasterDTOs;
+        return scrumMasterRepository.findAll()
+                .stream() // Convert the list to a stream
+                .map(scrumMasterMapper::fromEntity) // Use MapStruct mapper to convert each entity to DTO
+                .collect(Collectors.toList()); // Collect the results into a list
     }
 
     @Override
     public UserStoryDTO createUserStory(UserStoryDTO userStoryDTO) {
-        UserStory userStory = userStoryDTO.toEntity();
+        UserStory userStory = UserStoryMapper.INSTANCE.toEntity(userStoryDTO);
         userStory = userStoryRepository.save(userStory);
-        return UserStoryDTO.fromEntity(userStory);
+        return UserStoryMapper.INSTANCE.fromEntity(userStory);
     }
 
     @Override
     public UserStoryDTO getUserStoryById(Long id) {
         UserStory userStory = userStoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("UserStory not found with id: " + id));
-        return UserStoryDTO.fromEntity(userStory);
+        return UserStoryMapper.INSTANCE.fromEntity(userStory);
     }
 
     @Override
@@ -107,7 +119,7 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
 
         // Save the updated entity
         existingUserStory = userStoryRepository.save(existingUserStory);
-        return UserStoryDTO.fromEntity(existingUserStory);
+        return UserStoryMapper.INSTANCE.fromEntity(existingUserStory);
     }
 
     @Override
@@ -119,24 +131,22 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
 
     @Override
     public List<UserStoryDTO> getUserStories() {
-        List<UserStory> userStories = userStoryRepository.findAll();
-        List<UserStoryDTO> userStoryDTOs = new ArrayList<>();
-        for (UserStory userStory : userStories) {
-            userStoryDTOs.add(UserStoryDTO.fromEntity(userStory));
-        }
-        return userStoryDTOs;
+        return userStoryRepository.findAll()
+                .stream() // Convert the list to a stream
+                .map(userStoryMapper::fromEntity) // Use the injected mapper to map entities to DTOs
+                .collect(Collectors.toList()); // Collect the results into a list
     }
 
     @Override
     public EpicDTO createEpic(EpicDTO epicDTO) {
-        Epic epic = epicDTO.toEntity();
+        Epic epic = EpicMapper.INSTANCE.toEntity(epicDTO);
         epic = epicRepository.save(epic);
-        return EpicDTO.fromEntity(epic);
+        return EpicMapper.INSTANCE.fromEntity(epic);
     }
 
     @Override
     public EpicDTO getEpicById(Long id) {
-        return EpicDTO.fromEntity(epicRepository.findById(id)
+        return EpicMapper.INSTANCE.fromEntity(epicRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Epic not found with id: " + id)));
     }
 
@@ -152,7 +162,7 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
 
         // Save the updated entity
         existingEpic = epicRepository.save(existingEpic);
-        return EpicDTO.fromEntity(existingEpic);
+        return EpicMapper.INSTANCE.fromEntity(existingEpic);
     }
 
     @Override
@@ -164,12 +174,10 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
 
     @Override
     public List<EpicDTO> getEpics() {
-        List<Epic> epics = epicRepository.findAll();
-        List<EpicDTO> epicDTOs = new ArrayList<>();
-        for (Epic epic : epics) {
-            epicDTOs.add(EpicDTO.fromEntity(epic));
-        }
-        return epicDTOs;
+        return epicRepository.findAll()
+                .stream() // Convert the list to a stream
+                .map(epicMapper::fromEntity) // Use the injected mapper to map entities to DTOs
+                .collect(Collectors.toList()); // Collect the results into a list
     }
 
     @Override
