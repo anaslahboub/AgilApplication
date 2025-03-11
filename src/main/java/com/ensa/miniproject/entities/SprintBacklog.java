@@ -7,29 +7,31 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserStory {
+public class SprintBacklog {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
-    private String enTantQue;
-    private String JeVeux;
-    private String aFinQue ;
-    private Etat etat;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Enumerated(EnumType.STRING)
     private Priorite priority;
 
-    @ManyToOne
+    @OneToMany(mappedBy = "productBacklog")
+    @JsonManagedReference
+    private List<Epic> epics;
+
+
+    @OneToMany(mappedBy = "productBacklog")
     @JsonBackReference
-    private ProductBacklog productBacklog;
-
-    @ManyToOne(optional = true)
-    private Epic epic;
-
+    private List<UserStory> userStories;
 }
