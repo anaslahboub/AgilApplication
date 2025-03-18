@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ValidationAspect {
 
-//    @Before("execution(* com.ensa.miniproject.services.ProductOwnerService.addProject(..)) && args(projectDTO)")
+//    @Before("execution(* com.ensa.miniproject.services.productOwner.ProductOwnerService.addProject(..)) && args(projectDTO)")
 //    public void validateProjectDTO(ProjectDTO projectDTO) {
 //        if (projectDTO.getDateDebut().isAfter(projectDTO.getDateFin())) {
 //            throw new IllegalArgumentException("La date de début doit être inférieure à la date de fin.");
@@ -26,7 +26,7 @@ public class ValidationAspect {
 
         private static final Logger logger = LoggerFactory.getLogger(ValidationAspect.class);
 
-        @Around("execution(* com.ensa.miniproject.services.ProductOwnerService.addProject(..)) && args(projectDTO)")
+        @Around("execution(* com.ensa.miniproject.services.productOwner.ProductOwnerService.addProject(..)) && args(projectDTO)")
         public Object validateAndExecuteProjectDTO(ProceedingJoinPoint joinPoint, ProjectDTO projectDTO) throws Throwable {
             // Validate the projectDTO before proceeding
             if (projectDTO.getDateDebut().isAfter(projectDTO.getDateFin())) {

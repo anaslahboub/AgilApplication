@@ -17,21 +17,4 @@ public class EpicDTO {
     private String description;
     private ProductBacklog productBacklog;
 
-    public Epic toEntity(){
-        Epic epic = new Epic();
-        epic.setId(id);
-        epic.setTitle(title);
-        epic.setDescription(description);
-        epic.setProductBacklog(productBacklog);
-        return epic;
-    }
-
-    public static EpicDTO fromEntity(Epic epic){
-        EpicDTO epicDTO = new EpicDTO();
-        epicDTO.setId(epic.getId());
-        epicDTO.setTitle(epic.getTitle());
-        epicDTO.setDescription(epic.getDescription());
-        epicDTO.setProductBacklog(epic.getProductBacklog());
-        return epicDTO;
-    }
 }
