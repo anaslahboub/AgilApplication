@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScrumMaster extends User{
-
     @OneToMany
     @JsonBackReference
     List<Project> projects; 

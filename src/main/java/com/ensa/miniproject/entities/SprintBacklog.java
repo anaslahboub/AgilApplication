@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductBacklog {
+public class SprintBacklog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

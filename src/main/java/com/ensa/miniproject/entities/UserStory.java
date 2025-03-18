@@ -17,6 +17,10 @@ public class UserStory {
     private Long id;
     private String title;
     private String description;
+    private String enTantQue;
+    private String JeVeux;
+    private String aFinQue ;
+    private Etat etat;
 
     @Enumerated(EnumType.STRING)
     private Priorite priority;
