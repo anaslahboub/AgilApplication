@@ -24,13 +24,13 @@ public interface ProductOwnerService {
     public void deleteProductOwner(Long id);
 
     /// product backlog crud
+    ///
 
     public ProductBackLogRespDTO addProductBacklog(ProductBackLogCreateDTO productBacklog);
     public ProductBackLogRespDTO updateProductBacklog(ProductBackLogRespDTO productBacklog);
     public ProductBackLogRespDTO getProductBacklogById(Long id);
     public List<ProductBackLogRespDTO> getProductBacklogs();
     public void deleteProductBacklog(Long id);
-
 
 
 
@@ -41,5 +41,3 @@ public interface ProductOwnerService {
 
 
 }
-
-
