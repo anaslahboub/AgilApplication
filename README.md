@@ -181,10 +181,9 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 For any questions or feedback, feel free to reach out:
-- **Your Name**
-- **Email**: your.email@example.com
-- **GitHub**: [anaslahboub](https://github.com/anaslahboub)
-
+- **Your Name** anas lahboub 
+- **Email**: anaslahbou11@gmail.com
+- **Phone** : 0682582461
 ---
 
 Let me know if you need further adjustments or additional details! 🚀
