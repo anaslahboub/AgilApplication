@@ -1,5 +1,7 @@
 package com.ensa.miniproject.entities;
 
-public class Scenario {
+import java.io.Serializable;
+
+public class Scenario implements Serializable {
 
 }

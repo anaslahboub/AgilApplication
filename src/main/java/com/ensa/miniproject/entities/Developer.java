@@ -9,15 +9,4 @@ import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-
-public class Developer extends User{
-
-    @ManyToOne
-    @JsonBackReference
-    private EquipeDevelopement equipeDevelopement;
-
-    @ManyToMany
-    private List<Project> projects;
-}
+public class Developer extends User{ }

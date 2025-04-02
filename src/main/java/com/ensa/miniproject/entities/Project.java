@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data
-public class Project {
+public class Project implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,17 +19,13 @@ public class Project {
     private LocalDate dateFin;
 
     @ManyToOne
-    @JsonManagedReference
     private ProductOwner owner;
 
     @ManyToOne
-    @JsonManagedReference
     private ScrumMaster scrumMaster;
 
     @ManyToOne
-    @JsonManagedReference
     private EquipeDevelopement equipeDevelopement;
-
 
     @OneToOne
     private ProductBacklog productBacklog;

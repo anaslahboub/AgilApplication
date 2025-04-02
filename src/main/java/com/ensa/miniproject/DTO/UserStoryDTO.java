@@ -11,37 +11,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Data
-public class UserStoryDTO {
-    private Long id;
-    private String title;
-    private String description;
-    private Priorite priority;
-    private ProductBacklog productBacklog;
-    private Epic epic;
 
-    public UserStory toEntity() {
-        UserStory userStory = new UserStory();
-        userStory.setId(id);
-        userStory.setTitle(title);
-        userStory.setDescription(description);
-        userStory.setPriority(priority);
-        userStory.setProductBacklog(productBacklog);
-        userStory.setEpic(epic);
-        return userStory;
-    }
-
-    public static UserStoryDTO fromEntity(UserStory userStory) {
-        UserStoryDTO userStoryDTO = new UserStoryDTO();
-        userStoryDTO.setId(userStory.getId());
-        userStoryDTO.setTitle(userStory.getTitle());
-        userStoryDTO.setDescription(userStory.getDescription());
-        userStoryDTO.setPriority(userStory.getPriority());
-        userStoryDTO.setProductBacklog(userStory.getProductBacklog());
-        userStoryDTO.setEpic(userStory.getEpic());
-        return userStoryDTO;
-    }
-}
+public record UserStoryDTO(
+        Long id,
+        String title,
+        String description,
+        Priorite priority
+) {}

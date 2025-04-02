@@ -6,10 +6,8 @@ import com.ensa.miniproject.entities.EquipeDevelopement;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface EquipeDevelopementMapper {
-    EquipeDevelopementMapper INSTANCE = Mappers.getMapper(EquipeDevelopementMapper.class);
-
     EquipeDevelopementDTO fromEntity(EquipeDevelopement equipeDevelopement);
     EquipeDevelopement toEntity(EquipeDevelopementDTO equipeDevelopementDTO);
 }

@@ -1,142 +1,202 @@
 package com.ensa.miniproject.services;
 
 import com.ensa.miniproject.DTO.ScrumMasterDTO;
-import com.ensa.miniproject.entities.Epic;
-import com.ensa.miniproject.entities.Priorite;
+import com.ensa.miniproject.entities.Project;
 import com.ensa.miniproject.entities.ScrumMaster;
-import com.ensa.miniproject.entities.UserStory;
-import com.ensa.miniproject.repository.EpicRepository;
+import com.ensa.miniproject.mapping.ScrumMasterMapper;
 import com.ensa.miniproject.repository.ScrumMasterRepository;
-import com.ensa.miniproject.repository.UserStoryRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.ensa.miniproject.services.ScrumMaster.ScrumMasterServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Enables Mockito in JUnit 5
+@ExtendWith(MockitoExtension.class)
 class ScrumMasterServiceImplTest {
 
     @Mock
     private ScrumMasterRepository scrumMasterRepository;
 
     @Mock
-    private UserStoryRepository userStoryRepository;
-
-    @Mock
-    private EpicRepository epicRepository;
+    private ScrumMasterMapper scrumMasterMapper;
 
     @InjectMocks
     private ScrumMasterServiceImpl scrumMasterService;
 
+    private ScrumMaster scrumMaster;
     private ScrumMasterDTO scrumMasterDTO;
-    private UserStory userStory;
-    private Epic epic;
+    private List<Project> projects;
 
     @BeforeEach
     void setUp() {
-        scrumMasterDTO = new ScrumMasterDTO();
-        scrumMasterDTO.setId(1L);
+        // Setup test project
+        Project project = new Project();
+        project.setId(1L);
+        project.setNom("Test Project");
+        projects = List.of(project);
 
-        userStory = new UserStory();
-        userStory.setId(1L);
+        // Setup ScrumMaster entity
+        scrumMaster = new ScrumMaster();
+        scrumMaster.setId(1L);
+        scrumMaster.setUsername("scrumMaster1");
+        scrumMaster.setPrenom("John");
+        scrumMaster.setPassword("password123");
+        scrumMaster.setEmail("john@example.com");
 
-        epic = new Epic();
-        epic.setId(1L);
+        // Setup ScrumMasterDTO record
+        scrumMasterDTO = new ScrumMasterDTO(
+                1L,
+                "scrumMaster1",
+                "John",
+                "password123",
+                "john@example.com"
+        );
     }
 
     @Test
-    void testCreateScrumMaster() {
-        when(scrumMasterRepository.save(scrumMaster)).thenReturn(scrumMaster);
+    @DisplayName("Create ScrumMaster - Should return saved DTO")
+    void createScrumMaster_ShouldReturnSavedScrumMasterDTO() {
+        // Arrange
+        when(scrumMasterMapper.toEntity(any(ScrumMasterDTO.class))).thenReturn(scrumMaster);
+        when(scrumMasterRepository.save(any(ScrumMaster.class))).thenReturn(scrumMaster);
+        when(scrumMasterMapper.fromEntity(any(ScrumMaster.class))).thenReturn(scrumMasterDTO);
 
-        ScrumMaster savedScrumMaster = scrumMasterService.createScrumMaster(scrumMaster);
+        // Act
+        ScrumMasterDTO result = scrumMasterService.createScrumMaster(scrumMasterDTO);
 
-        assertNotNull(savedScrumMaster);
-        assertEquals(1L, savedScrumMaster.getId());
-        verify(scrumMasterRepository, times(1)).save(scrumMaster);
+        // Assert
+        assertNotNull(result);
+        assertEquals(scrumMasterDTO.id(), result.id());
+        assertEquals(scrumMasterDTO.username(), result.username());
 
-        System.out.println("✅ testCreateScrumMaster passed!");
+        verify(scrumMasterMapper).toEntity(scrumMasterDTO);
+        verify(scrumMasterRepository).save(scrumMaster);
+        verify(scrumMasterMapper).fromEntity(scrumMaster);
     }
 
     @Test
-    void testGetScrumMasterById_Success() {
+    @DisplayName("Get ScrumMaster by ID - When exists - Should return DTO")
+    void getScrumMasterById_WhenExists_ShouldReturnScrumMasterDTO() {
+        // Arrange
         when(scrumMasterRepository.findById(1L)).thenReturn(Optional.of(scrumMaster));
+        when(scrumMasterMapper.fromEntity(any(ScrumMaster.class))).thenReturn(scrumMasterDTO);
 
-        ScrumMaster found = scrumMasterService.getScrumMasterById(1L);
+        // Act
+        ScrumMasterDTO result = scrumMasterService.getScrumMasterById(1L);
 
-        assertNotNull(found);
-        assertEquals(1L, found.getId());
-        verify(scrumMasterRepository, times(1)).findById(1L);
-
-        System.out.println("✅ testGetScrumMasterById_Success passed!");
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.id());
+        assertEquals("scrumMaster1", result.username());
+        verify(scrumMasterRepository).findById(1L);
     }
 
     @Test
-    void testGetScrumMasterById_NotFound() {
+    @DisplayName("Get ScrumMaster by ID - When not exists - Should throw exception")
+    void getScrumMasterById_WhenNotExists_ShouldThrowException() {
+        // Arrange
         when(scrumMasterRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> scrumMasterService.getScrumMasterById(1L));
-
-        verify(scrumMasterRepository, times(1)).findById(1L);
-
-        System.out.println("✅ testGetScrumMasterById_NotFound passed! (Exception expected)");
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                scrumMasterService.getScrumMasterById(1L));
+        verify(scrumMasterRepository).findById(1L);
+        verify(scrumMasterMapper, never()).fromEntity(any());
     }
 
     @Test
-    void testUpdateScrumMaster() {
-        when(scrumMasterRepository.save(scrumMaster)).thenReturn(scrumMaster);
+    @DisplayName("Update ScrumMaster - Should return updated DTO")
+    void updateScrumMaster_ShouldReturnUpdatedScrumMasterDTO() {
+        // Arrange
+        ScrumMasterDTO updatedDTO = new ScrumMasterDTO(
+                1L,
+                "updatedMaster",
+                "Updated",
+                "newPass",
+                "updated@example.com"
+        );
 
-        ScrumMaster updated = scrumMasterService.updateScrumMaster(scrumMaster);
-
-        assertNotNull(updated);
-        verify(scrumMasterRepository, times(1)).save(scrumMaster);
-
-        System.out.println("✅ testUpdateScrumMaster passed!");
-    }
-
-    @Test
-    void testDeleteScrumMaster() {
         when(scrumMasterRepository.findById(1L)).thenReturn(Optional.of(scrumMaster));
-        doNothing().when(scrumMasterRepository).delete(scrumMaster);
+        when(scrumMasterRepository.save(any(ScrumMaster.class))).thenReturn(scrumMaster);
+        when(scrumMasterMapper.fromEntity(any(ScrumMaster.class))).thenReturn(updatedDTO);
 
+        // Act
+        ScrumMasterDTO result = scrumMasterService.updateScrumMaster(updatedDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("updatedMaster", result.username());
+        assertEquals("Updated", result.prenom());
+        assertEquals("updated@example.com", result.email());
+
+        verify(scrumMasterRepository).findById(1L);
+        verify(scrumMasterRepository).save(scrumMaster);
+    }
+
+    @Test
+    @DisplayName("Delete ScrumMaster - When exists - Should delete")
+    void deleteScrumMaster_WhenExists_ShouldDelete() {
+        // Arrange
+        when(scrumMasterRepository.findById(1L)).thenReturn(Optional.of(scrumMaster));
+
+        // Act
         scrumMasterService.deleteScrumMaster(1L);
 
-        verify(scrumMasterRepository, times(1)).delete(scrumMaster);
-
-        System.out.println("✅ testDeleteScrumMaster passed!");
+        // Assert
+        verify(scrumMasterRepository).findById(1L);
+        verify(scrumMasterRepository).delete(scrumMaster);
     }
 
     @Test
-    void testCreateUserStory() {
-        when(userStoryRepository.save(userStory)).thenReturn(userStory);
+    @DisplayName("Delete ScrumMaster - When not exists - Should throw exception")
+    void deleteScrumMaster_WhenNotExists_ShouldThrowException() {
+        // Arrange
+        when(scrumMasterRepository.findById(1L)).thenReturn(Optional.empty());
 
-        UserStory savedStory = scrumMasterService.createUserStory(userStory);
-
-        assertNotNull(savedStory);
-        assertEquals(1L, savedStory.getId());
-        verify(userStoryRepository, times(1)).save(userStory);
-
-        System.out.println("✅ testCreateUserStory passed!");
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                scrumMasterService.deleteScrumMaster(1L));
+        verify(scrumMasterRepository).findById(1L);
+        verify(scrumMasterRepository, never()).delete(any());
     }
 
     @Test
-    void testAssignEpicToUserStory() {
-        when(userStoryRepository.findById(1L)).thenReturn(Optional.of(userStory));
+    @DisplayName("Get all ScrumMasters - Should return list of DTOs")
+    void getScrumMasters_ShouldReturnListOfScrumMasterDTOs() {
+        // Arrange
+        when(scrumMasterRepository.findAll()).thenReturn(List.of(scrumMaster));
+        when(scrumMasterMapper.fromEntity(any(ScrumMaster.class))).thenReturn(scrumMasterDTO);
 
-        scrumMasterService.affectUserStoryToEpic(1L, epic);
+        // Act
+        List<ScrumMasterDTO> results = scrumMasterService.getScrumMasters();
 
-        assertEquals(epic, userStory.getEpic()); // Ensure the user story is assigned to the epic
-        verify(userStoryRepository, times(1)).findById(1L);
+        // Assert
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        assertEquals(1L, results.get(0).id());
+        verify(scrumMasterRepository).findAll();
+    }
 
-        System.out.println("✅ testAssignEpicToUserStory passed!");
+    @Test
+    @DisplayName("INTENTIONAL FAILURE - Should show X in coverage")
+    void intentionallyFailingTest() {
+        // Setup
+        when(scrumMasterRepository.findById(1L)).thenReturn(Optional.of(scrumMaster));
+        when(scrumMasterMapper.fromEntity(any())).thenReturn(scrumMasterDTO);
+
+        // This will intentionally fail
+        ScrumMasterDTO result = scrumMasterService.getScrumMasterById(1L);
+        assertEquals("wrongUsername", result.username());
     }
 }

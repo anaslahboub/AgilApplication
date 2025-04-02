@@ -9,15 +9,18 @@ import com.ensa.miniproject.repository.EpicRepository;
 import com.ensa.miniproject.repository.ScrumMasterRepository;
 import com.ensa.miniproject.repository.UserStoryRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class ScrumMasterServiceImpl implements ScrumMasterService {
     private final ScrumMasterRepository scrumMasterRepository;
     private final ScrumMasterMapper scrumMasterMapper;
 
-
+    @Autowired
     public ScrumMasterServiceImpl(ScrumMasterRepository scrumMasterRepository,
                                   UserStoryRepository userStoryRepository,
                                   ScrumMasterMapper scrumMasterMapper
@@ -29,33 +32,32 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
     }
     @Override
     public ScrumMasterDTO createScrumMaster(ScrumMasterDTO scrumMasterDTO) {
-        ScrumMaster scrumMaster = ScrumMasterMapper.INSTANCE.toEntity(scrumMasterDTO);
+        ScrumMaster scrumMaster = scrumMasterMapper.toEntity(scrumMasterDTO);
         scrumMaster = scrumMasterRepository.save(scrumMaster);
-        return ScrumMasterMapper.INSTANCE.fromEntity(scrumMaster);
+        return scrumMasterMapper.fromEntity(scrumMaster);
     }
 
     @Override
     public ScrumMasterDTO getScrumMasterById(Long id) {
         ScrumMaster scrumMaster = scrumMasterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No ScrumMaster found with id: " + id));
-        return ScrumMasterMapper.INSTANCE.fromEntity(scrumMaster);
+        return scrumMasterMapper.fromEntity(scrumMaster);
     }
 
     @Override
     public ScrumMasterDTO updateScrumMaster(ScrumMasterDTO scrumMasterDTO) {
-        ScrumMaster existingScrumMaster = scrumMasterRepository.findById(scrumMasterDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("No ScrumMaster found with id: " + scrumMasterDTO.getId()));
+        ScrumMaster existingScrumMaster = scrumMasterRepository.findById(scrumMasterDTO.id())
+                .orElseThrow(() -> new EntityNotFoundException("No ScrumMaster found with id: " + scrumMasterDTO.id()));
 
         // Update fields
-        existingScrumMaster.setPrenom(scrumMasterDTO.getPrenom());
-        existingScrumMaster.setEmail(scrumMasterDTO.getEmail());
-        existingScrumMaster.setProjects(scrumMasterDTO.getProjects());
-        existingScrumMaster.setPassword(scrumMasterDTO.getPassword());
-        existingScrumMaster.setUsername(scrumMasterDTO.getUsername());
+        existingScrumMaster.setPrenom(scrumMasterDTO.prenom());
+        existingScrumMaster.setEmail(scrumMasterDTO.email());
+        existingScrumMaster.setPassword(scrumMasterDTO.password());
+        existingScrumMaster.setUsername(scrumMasterDTO.username());
 
         // Save the updated entity
         existingScrumMaster = scrumMasterRepository.save(existingScrumMaster);
-        return ScrumMasterMapper.INSTANCE.fromEntity(existingScrumMaster);
+        return scrumMasterMapper.fromEntity(existingScrumMaster);
     }
 
     @Override

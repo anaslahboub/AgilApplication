@@ -11,4 +11,8 @@ public interface EpicService {
     public void deleteEpic(Long id);
     public List<EpicDTO> getEpics();
 
+    /// /////////// METIER /////////////////
+    EpicDTO affectUserStoriesToEpic(Long epicId, List<Long> userStoryIds);
+    EpicDTO removeUserStoryFromEpic(Long epicId, Long userStoryId);
+
 }

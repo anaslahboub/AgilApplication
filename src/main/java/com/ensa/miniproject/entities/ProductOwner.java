@@ -10,12 +10,5 @@ import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-
 public class ProductOwner extends User{
-
-    @OneToMany
-    @JsonBackReference
-    List<Project> projects;
 }

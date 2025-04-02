@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EquipeDevelopement {
+public class EquipeDevelopement implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "equipeDevelopement")
-    @JsonManagedReference
+    @OneToMany
     private List<Developer> developers;
 }
 

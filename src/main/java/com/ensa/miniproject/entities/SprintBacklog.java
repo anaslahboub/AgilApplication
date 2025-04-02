@@ -7,13 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SprintBacklog {
+public class SprintBacklog implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,12 +28,10 @@ public class SprintBacklog {
     @Enumerated(EnumType.STRING)
     private Priorite priority;
 
-    @OneToMany(mappedBy = "productBacklog")
-    @JsonManagedReference
+    @OneToMany
     private List<Epic> epics;
 
-
-    @OneToMany(mappedBy = "productBacklog")
-    @JsonBackReference
+    @OneToMany
     private List<UserStory> userStories;
+
 }

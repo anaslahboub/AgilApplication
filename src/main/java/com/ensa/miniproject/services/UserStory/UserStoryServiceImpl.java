@@ -24,33 +24,31 @@ public class UserStoryServiceImpl implements UserStoryService {
 
     @Override
     public UserStoryDTO createUserStory(UserStoryDTO userStoryDTO) {
-        UserStory userStory = UserStoryMapper.INSTANCE.toEntity(userStoryDTO);
+        UserStory userStory = userStoryMapper.toEntity(userStoryDTO);
         userStory = userStoryRepository.save(userStory);
-        return UserStoryMapper.INSTANCE.fromEntity(userStory);
+        return userStoryMapper.fromEntity(userStory);
     }
 
     @Override
     public UserStoryDTO getUserStoryById(Long id) {
         UserStory userStory = userStoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("UserStory not found with id: " + id));
-        return UserStoryMapper.INSTANCE.fromEntity(userStory);
+        return userStoryMapper.fromEntity(userStory);
     }
 
     @Override
     public UserStoryDTO updateUserStory(UserStoryDTO userStoryDTO) {
-        UserStory existingUserStory = userStoryRepository.findById(userStoryDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("UserStory not found with id: " + userStoryDTO.getId()));
+        UserStory existingUserStory = userStoryRepository.findById(userStoryDTO.id())
+                .orElseThrow(() -> new EntityNotFoundException("UserStory not found with id: " + userStoryDTO.id()));
 
         // Update fields
-        existingUserStory.setTitle(userStoryDTO.getTitle());
-        existingUserStory.setDescription(userStoryDTO.getDescription());
-        existingUserStory.setPriority(userStoryDTO.getPriority());
-        existingUserStory.setEpic(userStoryDTO.getEpic());
-        existingUserStory.setProductBacklog(userStoryDTO.getProductBacklog());
+        existingUserStory.setTitle(userStoryDTO.title());
+        existingUserStory.setDescription(userStoryDTO.description());
+        existingUserStory.setPriority(userStoryDTO.priority());
 
         // Save the updated entity
         existingUserStory = userStoryRepository.save(existingUserStory);
-        return UserStoryMapper.INSTANCE.fromEntity(existingUserStory);
+        return userStoryMapper.fromEntity(existingUserStory);
     }
 
     @Override
@@ -67,4 +65,5 @@ public class UserStoryServiceImpl implements UserStoryService {
                 .map(userStoryMapper::fromEntity) // Use the injected mapper to map entities to DTOs
                 .collect(Collectors.toList()); // Collect the results into a list
     }
+
 }
