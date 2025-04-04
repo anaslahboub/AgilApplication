@@ -12,10 +12,4 @@ import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ScrumMaster extends User{
-    @OneToMany
-    @JsonBackReference
-    List<Project> projects; 
-}
+public class ScrumMaster extends User{}

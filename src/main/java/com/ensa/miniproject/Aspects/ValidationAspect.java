@@ -26,10 +26,11 @@ public class ValidationAspect {
 
         private static final Logger logger = LoggerFactory.getLogger(ValidationAspect.class);
 
-        @Around("execution(* com.ensa.miniproject.services.productOwner.ProductOwnerService.addProject(..)) && args(projectDTO)")
+        @Around("execution(* com.ensa.miniproject.services.project.ProjectService.addProject()) && args(projectDTO)")
         public Object validateAndExecuteProjectDTO(ProceedingJoinPoint joinPoint, ProjectDTO projectDTO) throws Throwable {
             // Validate the projectDTO before proceeding
-            if (projectDTO.getDateDebut().isAfter(projectDTO.getDateFin())) {
+            if (projectDTO.dateDebut().isAfter(projectDTO.dateFin()
+            )) {
                 throw new IllegalArgumentException("La date de début doit être inférieure à la date de fin.");
             }
 

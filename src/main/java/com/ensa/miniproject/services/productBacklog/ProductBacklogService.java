@@ -3,7 +3,8 @@ package com.ensa.miniproject.services.productBacklog;
 
 import com.ensa.miniproject.DTO.EpicDTO;
 import com.ensa.miniproject.DTO.ProductBacklogDTO;
-import com.ensa.miniproject.DTO.UserDTO;
+import com.ensa.miniproject.DTO.UserStoryDTO;
+import com.ensa.miniproject.entities.UserStory;
 
 import java.util.List;
 
@@ -15,10 +16,9 @@ public interface ProductBacklogService {
     List<ProductBacklogDTO> getProductBacklogs();
     void deleteProductBacklog(Long id);
 
-    UserDTO affectUserStoryToProductBackLog(Long id ,UserDTO userDTO);
-    EpicDTO affectEpicToProductBackLog(Long id , EpicDTO userDTO);
 
-    List<EpicDTO> getEpicsWithUserStories(Long productBacklogId);
-
+    /////////////METIER //////////////////
+    ProductBacklogDTO addEpicsToProductBacklog(Long productBacklogId, List<Long> epicIds);
+    ProductBacklogDTO removeEpicFromProductBacklog(Long productBacklogId, Long epicId);
 
 }

@@ -6,10 +6,8 @@ import com.ensa.miniproject.entities.ProductBacklog;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ProductBacklogMapper {
-    ProductBacklogMapper INSTANCE = Mappers.getMapper(ProductBacklogMapper.class);
-
     ProductBacklogDTO fromEntity(ProductBacklog productBacklog);
     ProductBacklog toEntity(ProductBacklogDTO productBacklogDTO);
 }

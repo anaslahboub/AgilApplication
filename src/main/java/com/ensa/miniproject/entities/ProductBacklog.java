@@ -7,13 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductBacklog {
+public class ProductBacklog implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,12 +27,9 @@ public class ProductBacklog {
     @Enumerated(EnumType.STRING)
     private Priorite priority;
 
-    @OneToMany(mappedBy = "productBacklog")
-    @JsonManagedReference
+    @OneToMany
     private List<Epic> epics;
 
-
-    @OneToMany(mappedBy = "productBacklog")
-    @JsonBackReference
+    @OneToMany
     private List<UserStory> userStories;
 }

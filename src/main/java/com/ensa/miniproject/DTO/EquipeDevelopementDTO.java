@@ -9,12 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Data
-public class EquipeDevelopementDTO {
-    private Long id;
-    private List<Developer> developers;
-
-}
+public record EquipeDevelopementDTO(
+        Long id,
+        List<Developer> developers
+) {}

@@ -20,7 +20,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO addProject(ProjectDTO projectDTO) {
-        if (projectDTO.getDateDebut().isAfter(projectDTO.getDateFin())) {
+        if (projectDTO.dateDebut().isAfter(projectDTO.dateFin())) {
             throw new InvalidDateException("La date de début doit être inférieure à la date de fin.");
         }
         Project project = projectMapper.toEntity(projectDTO);
@@ -30,7 +30,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO updateProject(ProjectDTO projectDTO) {
-        if (projectDTO.getDateDebut().isAfter(projectDTO.getDateFin())) {
+        if (projectDTO.dateDebut().isAfter(projectDTO.dateFin())) {
             throw new InvalidDateException("La date de début doit être inférieure à la date de fin.");
         }
         Project project = projectMapper.toEntity(projectDTO);
