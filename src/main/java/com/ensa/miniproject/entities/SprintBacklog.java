@@ -21,6 +21,7 @@ public class SprintBacklog implements Serializable {
     private Long id;
     private String title;
     private String description;
+    private String goal;
 
     @Enumerated(EnumType.STRING)
     private Status status;

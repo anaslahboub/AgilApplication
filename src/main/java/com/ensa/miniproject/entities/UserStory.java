@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,8 +24,11 @@ public class UserStory implements Serializable {
     private String JeVeux;
     private String aFinQue ;
     private Etat etat;
+    private Long tauxDavancenement;
 
     @Enumerated(EnumType.STRING)
     private Priorite priority;
 
+    @OneToMany
+    private List<Task> tasks;
 }

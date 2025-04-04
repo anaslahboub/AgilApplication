@@ -47,6 +47,7 @@ public class SprintBacklogServiceImpl implements SprintBacklogService {
         existingSprint.setDescription(sprintBacklogDTO.description());
         existingSprint.setStatus(sprintBacklogDTO.status());
         existingSprint.setPriority(sprintBacklogDTO.priority());
+        existingSprint.setGoal(sprintBacklogDTO.goal());
 
         SprintBacklog updatedSprint = sprintBacklogRepository.save(existingSprint);
         return sprintBacklogMapper.fromEntity(updatedSprint);

@@ -13,6 +13,7 @@ public record SprintBacklogDTO(
         String description,
         Status status,
         Priorite priority,
+        String goal,
         List<Epic> epics,
         List<UserStory> userStories
 ) {}

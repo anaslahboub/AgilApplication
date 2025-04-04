@@ -45,6 +45,7 @@ public class SprintBacklogController {
                 sprintBacklogDTO.description(),
                 sprintBacklogDTO.status(),
                 sprintBacklogDTO.priority(),
+                sprintBacklogDTO.goal(),
                 sprintBacklogDTO.epics(),
                 sprintBacklogDTO.userStories()
         );
