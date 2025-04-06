@@ -1,11 +1,11 @@
-package com.ensa.miniproject.controllers.project;
+package com.ensa.miniproject.controllers;
 
 import com.ensa.miniproject.DTO.ProjectDTO;
 import com.ensa.miniproject.services.project.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,37 +19,36 @@ public class ProjectController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDTO) {
-        ProjectDTO newProject = projectService.addProject(projectDTO);
-        return new ResponseEntity<>(newProject, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(projectService.addProject(projectDTO));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
-        List<ProjectDTO> projects = projectService.getProjects();
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+        return ResponseEntity.ok(projectService.getProjects());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long id) {
-        try {
-            ProjectDTO projectDTO = projectService.getProjectById(id);
-            return ResponseEntity.ok(projectDTO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id,
-                                                    @RequestBody ProjectDTO projectDTO) {
-        ProjectDTO updatedProject = projectService.updateProject(projectDTO);
-        return new ResponseEntity<>(updatedProject, HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
+    public ResponseEntity<ProjectDTO> updateProject(
+            @PathVariable Long id,
+            @RequestBody ProjectDTO projectDTO) {
+        return ResponseEntity.ok(projectService.updateProject(projectDTO));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }

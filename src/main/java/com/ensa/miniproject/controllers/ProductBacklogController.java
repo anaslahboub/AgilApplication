@@ -4,8 +4,8 @@ import com.ensa.miniproject.DTO.ProductBacklogDTO;
 import com.ensa.miniproject.services.productBacklog.ProductBacklogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,57 +19,52 @@ public class ProductBacklogController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<ProductBacklogDTO> createProductBacklog(@RequestBody ProductBacklogDTO productBacklogDTO) {
-        ProductBacklogDTO newBacklog = productBacklogService.addProductBacklog(productBacklogDTO);
-        return new ResponseEntity<>(newBacklog, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productBacklogService.addProductBacklog(productBacklogDTO));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<List<ProductBacklogDTO>> getAllProductBacklogs() {
-        List<ProductBacklogDTO> backlogs = productBacklogService.getProductBacklogs();
-        return new ResponseEntity<>(backlogs, HttpStatus.OK);
+        return ResponseEntity.ok(productBacklogService.getProductBacklogs());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<ProductBacklogDTO> getProductBacklogById(@PathVariable Long id) {
-        try {
-            ProductBacklogDTO backlogDTO = productBacklogService.getProductBacklogById(id);
-            return ResponseEntity.ok(backlogDTO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(productBacklogService.getProductBacklogById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductBacklogDTO> updateProductBacklog(@PathVariable Long id,
-                                                                  @RequestBody ProductBacklogDTO productBacklogDTO) {
-        ProductBacklogDTO updatedBacklog = productBacklogService.updateProductBacklog(productBacklogDTO);
-        return new ResponseEntity<>(updatedBacklog, HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
+    public ResponseEntity<ProductBacklogDTO> updateProductBacklog(
+            @PathVariable Long id,
+            @RequestBody ProductBacklogDTO productBacklogDTO) {
+        return ResponseEntity.ok(productBacklogService.updateProductBacklog(productBacklogDTO));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProductBacklog(@PathVariable Long id) {
         productBacklogService.deleteProductBacklog(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 
-
-    /// //////////////////////
-    /// /////METIER///////////
-    /// /////////////////////
     @PostMapping("/{productBacklogId}/epics")
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<ProductBacklogDTO> addEpicsToProductBacklog(
             @PathVariable Long productBacklogId,
             @RequestBody List<Long> epicIds) {
-        ProductBacklogDTO updatedBacklog = productBacklogService.addEpicsToProductBacklog(productBacklogId, epicIds);
-        return ResponseEntity.ok(updatedBacklog);
+        return ResponseEntity.ok(productBacklogService.addEpicsToProductBacklog(productBacklogId, epicIds));
     }
 
     @DeleteMapping("/{productBacklogId}/epics/{epicId}")
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<ProductBacklogDTO> removeEpicFromProductBacklog(
             @PathVariable Long productBacklogId,
             @PathVariable Long epicId) {
-        ProductBacklogDTO updatedBacklog = productBacklogService.removeEpicFromProductBacklog(productBacklogId, epicId);
-        return ResponseEntity.ok(updatedBacklog);
+        return ResponseEntity.ok(productBacklogService.removeEpicFromProductBacklog(productBacklogId, epicId));
     }
 }

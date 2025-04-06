@@ -188,15 +188,15 @@ class ScrumMasterServiceImplTest {
         verify(scrumMasterRepository).findAll();
     }
 
-    @Test
-    @DisplayName("INTENTIONAL FAILURE - Should show X in coverage")
-    void intentionallyFailingTest() {
-        // Setup
-        when(scrumMasterRepository.findById(1L)).thenReturn(Optional.of(scrumMaster));
-        when(scrumMasterMapper.fromEntity(any())).thenReturn(scrumMasterDTO);
-
-        // This will intentionally fail
-        ScrumMasterDTO result = scrumMasterService.getScrumMasterById(1L);
-        assertEquals("wrongUsername", result.username());
-    }
+//    @Test
+//    @DisplayName("INTENTIONAL FAILURE - Should show X in coverage")
+//    void intentionallyFailingTest() {
+//        // Setup
+//        when(scrumMasterRepository.findById(1L)).thenReturn(Optional.of(scrumMaster));
+//        when(scrumMasterMapper.fromEntity(any())).thenReturn(scrumMasterDTO);
+//
+//        // This will intentionally fail
+//        ScrumMasterDTO result = scrumMasterService.getScrumMasterById(1L);
+//        assertEquals("wrongUsername", result.username());
+//    }
 }

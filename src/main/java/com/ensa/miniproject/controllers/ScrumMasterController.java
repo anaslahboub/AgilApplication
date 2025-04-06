@@ -4,8 +4,8 @@ import com.ensa.miniproject.DTO.ScrumMasterDTO;
 import com.ensa.miniproject.services.ScrumMaster.ScrumMasterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,37 +19,36 @@ public class ScrumMasterController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ScrumMasterDTO> createScrumMaster(@RequestBody ScrumMasterDTO scrumMasterDTO) {
-        ScrumMasterDTO newScrumMaster = scrumMasterService.createScrumMaster(scrumMasterDTO);
-        return new ResponseEntity<>(newScrumMaster, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(scrumMasterService.createScrumMaster(scrumMasterDTO));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'PRODUCT_OWNER', 'SCRUM_MASTER')")
     public ResponseEntity<List<ScrumMasterDTO>> getAllScrumMasters() {
-        List<ScrumMasterDTO> scrumMasters = scrumMasterService.getScrumMasters();
-        return new ResponseEntity<>(scrumMasters, HttpStatus.OK);
+        return ResponseEntity.ok(scrumMasterService.getScrumMasters());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PRODUCT_OWNER', 'SCRUM_MASTER', 'DEVELOPER')")
     public ResponseEntity<ScrumMasterDTO> getScrumMasterById(@PathVariable Long id) {
-        try {
-            ScrumMasterDTO scrumMasterDTO = scrumMasterService.getScrumMasterById(id);
-            return ResponseEntity.ok(scrumMasterDTO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(scrumMasterService.getScrumMasterById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ScrumMasterDTO> updateScrumMaster(@PathVariable Long id,
-                                                            @RequestBody ScrumMasterDTO scrumMasterDTO) {
-        ScrumMasterDTO updatedScrumMaster = scrumMasterService.updateScrumMaster(scrumMasterDTO);
-        return new ResponseEntity<>(updatedScrumMaster, HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCRUM_MASTER')")
+    public ResponseEntity<ScrumMasterDTO> updateScrumMaster(
+            @PathVariable Long id,
+            @RequestBody ScrumMasterDTO scrumMasterDTO) {
+        return ResponseEntity.ok(scrumMasterService.updateScrumMaster(scrumMasterDTO));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteScrumMaster(@PathVariable Long id) {
         scrumMasterService.deleteScrumMaster(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }

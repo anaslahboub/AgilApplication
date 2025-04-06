@@ -4,8 +4,8 @@ import com.ensa.miniproject.DTO.ProductOwnerDTO;
 import com.ensa.miniproject.services.productOwner.ProductOwnerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,37 +19,36 @@ public class ProductOwnerController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductOwnerDTO> createProductOwner(@RequestBody ProductOwnerDTO productOwnerDTO) {
-        ProductOwnerDTO newProductOwner = productOwnerService.addProductOwner(productOwnerDTO);
-        return new ResponseEntity<>(newProductOwner, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productOwnerService.addProductOwner(productOwnerDTO));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCRUM_MASTER', 'PRODUCT_OWNER')")
     public ResponseEntity<List<ProductOwnerDTO>> getAllProductOwners() {
-        List<ProductOwnerDTO> productOwners = productOwnerService.getProductOwners();
-        return new ResponseEntity<>(productOwners, HttpStatus.OK);
+        return ResponseEntity.ok(productOwnerService.getProductOwners());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCRUM_MASTER', 'PRODUCT_OWNER')")
     public ResponseEntity<ProductOwnerDTO> getProductOwnerById(@PathVariable Long id) {
-        try {
-            ProductOwnerDTO productOwnerDTO = productOwnerService.getProductOwnerById(id);
-            return ResponseEntity.ok(productOwnerDTO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(productOwnerService.getProductOwnerById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductOwnerDTO> updateProductOwner(@PathVariable Long id,
-                                                              @RequestBody ProductOwnerDTO productOwnerDTO) {
-        ProductOwnerDTO updatedProductOwner = productOwnerService.updateProductOwner(productOwnerDTO);
-        return new ResponseEntity<>(updatedProductOwner, HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ADMIN', 'PRODUCT_OWNER')")
+    public ResponseEntity<ProductOwnerDTO> updateProductOwner(
+            @PathVariable Long id,
+            @RequestBody ProductOwnerDTO productOwnerDTO) {
+        return ResponseEntity.ok(productOwnerService.updateProductOwner(productOwnerDTO));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProductOwner(@PathVariable Long id) {
         productOwnerService.deleteProductOwner(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }

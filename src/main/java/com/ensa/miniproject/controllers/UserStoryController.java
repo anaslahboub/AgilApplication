@@ -4,8 +4,8 @@ import com.ensa.miniproject.DTO.UserStoryDTO;
 import com.ensa.miniproject.services.UserStory.UserStoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,37 +19,36 @@ public class UserStoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<UserStoryDTO> createUserStory(@RequestBody UserStoryDTO userStoryDTO) {
-        UserStoryDTO newUserStory = userStoryService.createUserStory(userStoryDTO);
-        return new ResponseEntity<>(newUserStory, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userStoryService.createUserStory(userStoryDTO));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<List<UserStoryDTO>> getAllUserStories() {
-        List<UserStoryDTO> userStories = userStoryService.getUserStories();
-        return new ResponseEntity<>(userStories, HttpStatus.OK);
+        return ResponseEntity.ok(userStoryService.getUserStories());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<UserStoryDTO> getUserStoryById(@PathVariable Long id) {
-        try {
-            UserStoryDTO userStoryDTO = userStoryService.getUserStoryById(id);
-            return ResponseEntity.ok(userStoryDTO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(userStoryService.getUserStoryById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserStoryDTO> updateUserStory(@PathVariable Long id,
-                                                        @RequestBody UserStoryDTO userStoryDTO) {
-        UserStoryDTO updatedUserStory = userStoryService.updateUserStory(userStoryDTO);
-        return new ResponseEntity<>(updatedUserStory, HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
+    public ResponseEntity<UserStoryDTO> updateUserStory(
+            @PathVariable Long id,
+            @RequestBody UserStoryDTO userStoryDTO) {
+        return ResponseEntity.ok(userStoryService.updateUserStory(userStoryDTO));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
     public ResponseEntity<Void> deleteUserStory(@PathVariable Long id) {
         userStoryService.deleteUserStory(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }
