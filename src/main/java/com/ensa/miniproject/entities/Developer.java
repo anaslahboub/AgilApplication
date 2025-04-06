@@ -9,4 +9,11 @@ import java.util.List;
 
 @Entity
 @Data
-public class Developer extends User{ }
+public class Developer extends User{
+    private String speciality;
+    private int experienceYears;
+
+    @ManyToOne
+    @JsonBackReference
+    private EquipeDevelopement equipe;
+}

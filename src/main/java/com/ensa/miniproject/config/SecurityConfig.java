@@ -29,9 +29,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // Autorisation par rôle
                         .requestMatchers("/api/developer/**").hasRole("DEVELOPER")
                         .requestMatchers("/api/scrum-master/**").hasRole("SCRUMMASTER")
                         .requestMatchers("/api/product-owner/**").hasRole("PRODUCTOWNER")
+
+                        // Sécurité des APIs principales (modifier selon ta logique métier)
+                        .requestMatchers("/api/epics/**").hasAnyRole("PRODUCTOWNER", "SCRUMMASTER")
+                        .requestMatchers("/api/product-backlogs/**").hasAnyRole("PRODUCTOWNER", "SCRUMMASTER")
+                        .requestMatchers("/api/projects/**").hasAnyRole("PRODUCTOWNER", "SCRUMMASTER")
+                        .requestMatchers("/api/sprint-backlogs/**").hasAnyRole("PRODUCTOWNER", "SCRUMMASTER", "DEVELOPER")
+                        .requestMatchers("/api/user-stories/**").hasAnyRole("PRODUCTOWNER", "SCRUMMASTER", "DEVELOPER")
+
+                        // Tout le reste nécessite une authentification
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -41,6 +52,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

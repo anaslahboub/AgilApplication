@@ -17,7 +17,10 @@ public class EquipeDevelopement implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+
+    @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Developer> developers;
+
 }
 
