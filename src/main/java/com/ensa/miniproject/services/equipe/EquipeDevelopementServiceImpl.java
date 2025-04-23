@@ -15,6 +15,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class EquipeDevelopementServiceImpl implements EquipeDevelopementService {
 
     private final EquipeDevelopementRepository equipeRepository;
@@ -23,9 +24,17 @@ public class EquipeDevelopementServiceImpl implements EquipeDevelopementService 
 
     @Override
     public EquipeDevelopementDTO createEquipe(EquipeDevelopementDTO equipeDevelopementDTO) {
-        EquipeDevelopement equipe = equipeDevelopementMapper.toEntity(equipeDevelopementDTO);
-        equipe = equipeRepository.save(equipe);
-        return equipeDevelopementMapper.fromEntity(equipe);
+        EquipeDevelopement equipeDevelopement = new EquipeDevelopement();
+
+        if(equipeDevelopementDTO.developers() != null) {
+            equipeDevelopement.setDevelopers(equipeDevelopementDTO.developers());
+            equipeDevelopement = equipeRepository.save(equipeDevelopement);
+
+        }else {
+            equipeDevelopement = equipeRepository.save(equipeDevelopement);
+
+        }
+        return equipeDevelopementMapper.fromEntity(equipeDevelopement);
     }
 
     @Override
@@ -72,6 +81,7 @@ public class EquipeDevelopementServiceImpl implements EquipeDevelopementService 
 
         // Set the bidirectional relationship
         equipe.getDevelopers().add(developer);
+        developer.setEquipe(equipe);
 
         equipeRepository.save(equipe);
         developerRepository.save(developer);

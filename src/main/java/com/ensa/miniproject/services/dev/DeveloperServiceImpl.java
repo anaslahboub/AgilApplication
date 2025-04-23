@@ -8,6 +8,7 @@ import com.ensa.miniproject.repository.DeveloperRepository;
 import com.ensa.miniproject.repository.EquipeDevelopementRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class DeveloperServiceImpl implements DeveloperService {
     private final  DeveloperRepository developerRepository;
     private final DeveloperMapper developerMapper;
     private final EquipeDevelopementRepository equipeRepository;
+
+
     @Override
     public DeveloperDto saveDeveloper(DeveloperDto developerDto) {
         Developer dev = developerMapper.toEntity(developerDto);
@@ -49,14 +53,6 @@ public class DeveloperServiceImpl implements DeveloperService {
         dev.setSpeciality(dto.getSpeciality());
         dev.setExperienceYears(dto.getExperienceYears());
 
-        if (dto.getEquipeId() != null) {
-            EquipeDevelopement equipe = equipeRepository.findById(dto.getEquipeId())
-                    .orElseThrow(() -> new RuntimeException("Equipe not found"));
-            dev.setEquipe(equipe);
-        } else {
-            dev.setEquipe(null);
-        }
-
         return developerMapper.fromEntity(developerRepository.save(dev));
     }
 
@@ -76,6 +72,7 @@ public class DeveloperServiceImpl implements DeveloperService {
     }
 
     @Override
+    @Transactional
     public DeveloperDto assignToEquipe(Long developerId, Long equipeId) {
         Developer dev = developerRepository.findById(developerId)
                 .orElseThrow(() -> new RuntimeException("Developer not found"));
@@ -84,6 +81,8 @@ public class DeveloperServiceImpl implements DeveloperService {
                 .orElseThrow(() -> new RuntimeException("Equipe not found"));
 
         dev.setEquipe(equipe);
+        equipe.getDevelopers().add(dev);
+
         return developerMapper.fromEntity(developerRepository.save(dev));
     }
 

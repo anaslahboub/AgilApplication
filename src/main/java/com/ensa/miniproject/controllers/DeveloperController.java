@@ -54,7 +54,7 @@ public class DeveloperController {
         return ResponseEntity.ok(developerService.findDevelopersBySpeciality(speciality));
     }
 
-    @PutMapping("/{developerId}/assign-equipe/{equipeId}")
+    @PostMapping("/{developerId}/assign-equipe/{equipeId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SCRUM_MASTER')")
     public ResponseEntity<DeveloperDto> assignToEquipe(
             @PathVariable Long developerId,

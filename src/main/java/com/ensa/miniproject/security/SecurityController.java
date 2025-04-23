@@ -37,8 +37,10 @@ public class SecurityController {
                 .map(a -> a.getAuthority())
                 .collect(Collectors.joining(" "));
 
+        System.out.println(authorities);
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("your-app")
+                .issuer("AgileApp")
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plus(10, ChronoUnit.MINUTES))
                 .subject(request.username())
@@ -49,7 +51,16 @@ public class SecurityController {
                 JwsHeader.with(MacAlgorithm.HS512).build(),
                 claims)).getTokenValue();
 
-        return Map.of("access_token", token);
+        JwtClaimsSet refreshClaims = JwtClaimsSet.builder()
+                .issuer("AgileApp")
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS))
+                .subject(request.username())
+                .build();
+        String refreshToken = jwtEncoder.encode(JwtEncoderParameters.from(
+                JwsHeader.with(MacAlgorithm.HS512).build(), refreshClaims)).getTokenValue();
+
+        return Map.of("access_token", token , "refresh_token", refreshToken);
     }
 
     @GetMapping("/profile")

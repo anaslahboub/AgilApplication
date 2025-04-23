@@ -1,6 +1,9 @@
 package com.ensa.miniproject.controllers;
 
+import com.ensa.miniproject.DTO.EquipeDevelopementDTO;
+import com.ensa.miniproject.DTO.ProductOwnerDTO;
 import com.ensa.miniproject.DTO.ProjectDTO;
+import com.ensa.miniproject.DTO.ScrumMasterDTO;
 import com.ensa.miniproject.services.project.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,4 +54,30 @@ public class ProjectController {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/scrum-master")
+    @PreAuthorize("hasAnyRole('PRODUCT_OWNER', 'ADMIN')")
+    public ResponseEntity<ScrumMasterDTO> addScrumMasterToProject(
+            @PathVariable Long id,
+            @RequestBody ScrumMasterDTO scrumMasterDTO) {
+        return ResponseEntity.ok(projectService.addScrumMasterToProject(id, scrumMasterDTO));
+    }
+
+    @PostMapping("/{id}/product-owner")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductOwnerDTO> addProductOwnerToProject(
+            @PathVariable Long id,
+            @RequestBody ProductOwnerDTO productOwnerDTO) {
+        return ResponseEntity.ok(projectService.addProductOwnerToProject(id, productOwnerDTO));
+    }
+
+    @PostMapping("/{id}/dev-team")
+    @PreAuthorize("hasAnyRole('SCRUM_MASTER', 'PRODUCT_OWNER', 'ADMIN')")
+    public ResponseEntity<EquipeDevelopementDTO> addDevTeamToProject(
+            @PathVariable Long id,
+            @RequestBody EquipeDevelopementDTO equipeDevelopementDTO) {
+        return ResponseEntity.ok(projectService.addEquipeDevelopementToProject(id, equipeDevelopementDTO));
+    }
+
+
 }

@@ -13,7 +13,7 @@ public class Developer extends User{
     private String speciality;
     private int experienceYears;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JsonBackReference
     private EquipeDevelopement equipe;
 }

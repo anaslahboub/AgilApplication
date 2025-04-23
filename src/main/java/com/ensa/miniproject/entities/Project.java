@@ -18,15 +18,15 @@ public class Project implements Serializable {
     private LocalDate dateDebut;
     private LocalDate dateFin;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     private ProductOwner owner;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     private ScrumMaster scrumMaster;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     private EquipeDevelopement equipeDevelopement;
 
-    @OneToOne
+    @OneToOne(optional = true)
     private ProductBacklog productBacklog;
 }
