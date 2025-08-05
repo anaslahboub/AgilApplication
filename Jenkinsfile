@@ -1,12 +1,32 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven'
+    }
+     environment {
+        IMAGE_NAME = 'anaslahboub/agile-app:1.2'
+    }
+
 
     stages {
         stage('Build') {
             steps {
                 echo 'stage of building'
-                // Exemple pour Maven
-                // sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                sh 'mvn package -DskipTest'
+            }
+        }
+        stage('Build image') {
+            steps {
+                 script {
+                    echo 'stage of building diocker image'
+                    withCredentials([string(credentialsId: 'docker_hub_token', variable: 'DOCKERHUB_TOKEN')]) {
+                        sh 'docker build -t $IMAGE_NAME .'
+                        sh 'echo "$DOCKERHUB_TOKEN" | docker login -u anaslahboub --password-stdin'
+                        sh 'docker push $IMAGE_NAME'
+                    }
+                 }
+
             }
         }
         stage('test') {
