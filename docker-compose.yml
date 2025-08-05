@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  jenkins :
+    image: jenkins/jenkins:lts
+    container_name: jen-app
+    ports:
+       - "8089:8080"
+       - "50000:50000"
+    volumes:
+      - jenkins_home2:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  db:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agile
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+    jenkins_home2:
+    mysql_data:

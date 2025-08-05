@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo 'stage of building'
 
-                sh 'mvn package -DskipTest'
+                sh 'mvn clean package -DskipTests'
             }
         }
         stage('Build image') {
