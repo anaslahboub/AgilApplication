@@ -20,7 +20,7 @@ pipeline {
             steps {
                  script {
                     echo 'stage of building diocker image'
-                    withCredentials([string(credentialsId: 'docker_hub_token', variable: 'DOCKERHUB_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'docker_hub_credentials', variable: 'DOCKERHUB_TOKEN')]) {
                         sh 'docker build -t $IMAGE_NAME .'
                         sh 'echo "$DOCKERHUB_TOKEN" | docker login -u anaslahboub --password-stdin'
                         sh 'docker push $IMAGE_NAME'
