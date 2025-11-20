@@ -1,7 +1,7 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.UserStoryCloneDTO;
-import com.ensa.miniproject.services.UserStoryClone.UserStoryCloneService;
+import com.ensa.miniproject.dto.UserStoryCloneDTO;
+import com.ensa.miniproject.services.userstoryclone.UserStoryCloneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

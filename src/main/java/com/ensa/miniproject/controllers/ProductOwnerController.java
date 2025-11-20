@@ -1,7 +1,7 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.ProductOwnerDTO;
-import com.ensa.miniproject.services.productOwner.ProductOwnerService;
+import com.ensa.miniproject.dto.ProductOwnerDTO;
+import com.ensa.miniproject.services.productowner.ProductOwnerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,6 +1,6 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.EquipeDevelopementDTO;
+import com.ensa.miniproject.dto.EquipeDevelopementDTO;
 import com.ensa.miniproject.services.equipe.EquipeDevelopementService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

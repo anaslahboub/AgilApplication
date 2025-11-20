@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.sprint;
 
-import com.ensa.miniproject.DTO.SprintDto;
+import com.ensa.miniproject.dto.SprintDto;
 import com.ensa.miniproject.entities.Sprint;
 import com.ensa.miniproject.entities.SprintBacklog;
 import com.ensa.miniproject.mapping.SprintMapper;
@@ -19,6 +19,7 @@ public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
     private final SprintBacklogRepository sprintBacklogRepository;
+    private final String SPRING_NOT_FOUND = "Sprint not found with ID: ";
 
     private final SprintMapper sprintMapper;
     @Override
@@ -58,7 +59,7 @@ public class SprintServiceImpl implements SprintService {
 
             return sprintMapper.mapToDto(sprintRepository.save(sprint));
         } else {
-            throw new RuntimeException("Sprint not found with ID: " + id);
+            throw new RuntimeException(SPRING_NOT_FOUND + id);
         }
     }
 
@@ -78,9 +79,9 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public SprintDto assignSprintBacklog(int sprintId, Long backlogId) {
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new RuntimeException("Sprint not found"));
+                .orElseThrow(() -> new RuntimeException(SPRING_NOT_FOUND +sprintId ));
         SprintBacklog backlog = sprintBacklogRepository.findById(backlogId)
-                .orElseThrow(() -> new RuntimeException("SprintBacklog not found"));
+                .orElseThrow(() -> new RuntimeException("sprintbacklog not found"));
 
         sprint.setSprintBacklog(backlog);
         return sprintMapper.mapToDto(sprintRepository.save(sprint));

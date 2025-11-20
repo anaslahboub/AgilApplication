@@ -1,6 +1,6 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.SprintDto;
+import com.ensa.miniproject.dto.SprintDto;
 import com.ensa.miniproject.services.sprint.SprintService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

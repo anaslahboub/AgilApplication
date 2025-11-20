@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.critere;
 
-import com.ensa.miniproject.DTO.CritereDTO;
+import com.ensa.miniproject.dto.CritereDTO;
 
 import java.util.List;
 

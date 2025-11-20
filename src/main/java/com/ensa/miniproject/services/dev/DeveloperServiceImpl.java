@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.dev;
 
-import com.ensa.miniproject.DTO.DeveloperDto;
+import com.ensa.miniproject.dto.DeveloperDto;
 import com.ensa.miniproject.entities.Developer;
 import com.ensa.miniproject.entities.EquipeDevelopement;
 import com.ensa.miniproject.mapping.DeveloperMapper;
@@ -21,6 +21,8 @@ public class DeveloperServiceImpl implements DeveloperService {
     private final  DeveloperRepository developerRepository;
     private final DeveloperMapper developerMapper;
     private final EquipeDevelopementRepository equipeRepository;
+
+    private final String DEVELOPER_NOT_FOUND = "Developer not found";
 
 
     @Override
@@ -45,7 +47,7 @@ public class DeveloperServiceImpl implements DeveloperService {
     @Override
     public DeveloperDto updateDeveloper(Long id, DeveloperDto dto) {
         Developer dev = developerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Developer not found"));
+                .orElseThrow(() -> new RuntimeException(DEVELOPER_NOT_FOUND));
         dev.setUsername(dto.getUsername());
         dev.setPrenom(dto.getPrenom());
         dev.setEmail(dto.getEmail());
@@ -68,14 +70,14 @@ public class DeveloperServiceImpl implements DeveloperService {
         return developerRepository.findBySpecialityIgnoreCase(speciality)
                 .stream()
                 .map(developerMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     @Transactional
     public DeveloperDto assignToEquipe(Long developerId, Long equipeId) {
         Developer dev = developerRepository.findById(developerId)
-                .orElseThrow(() -> new RuntimeException("Developer not found"));
+                .orElseThrow(() -> new RuntimeException(DEVELOPER_NOT_FOUND));
 
         EquipeDevelopement equipe = equipeRepository.findById(equipeId)
                 .orElseThrow(() -> new RuntimeException("Equipe not found"));
@@ -91,6 +93,6 @@ public class DeveloperServiceImpl implements DeveloperService {
         return developerRepository.findByEquipe_Id(equipeId)
                 .stream()
                 .map(developerMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -1,7 +1,7 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.EpicDTO;
-import com.ensa.miniproject.services.Epic.EpicService;
+import com.ensa.miniproject.dto.EpicDTO;
+import com.ensa.miniproject.services.epic.EpicService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

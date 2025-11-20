@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.critere;
 
-import com.ensa.miniproject.DTO.CritereDTO;
+import com.ensa.miniproject.dto.CritereDTO;
 import com.ensa.miniproject.entities.Critere;
 import com.ensa.miniproject.mapping.CritereMapper;
 import com.ensa.miniproject.repository.CritereRepository;
@@ -17,6 +17,7 @@ public class CritereServiceImpl implements CritereService {
 
     private final CritereRepository critereRepository;
     private final CritereMapper critereMapper;
+    private  final String CRITERE_NOT_FOUND = "Critere not found with id: ";
 
     @Override
     public CritereDTO createCritere(CritereDTO critereDTO) {
@@ -28,14 +29,14 @@ public class CritereServiceImpl implements CritereService {
     @Override
     public CritereDTO getCritereById(Long id) {
         Critere critere = critereRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Critere not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(CRITERE_NOT_FOUND + id));
         return critereMapper.fromEntity(critere);
     }
 
     @Override
     public CritereDTO updateCritere(CritereDTO critereDTO) {
         Critere existingCritere = critereRepository.findById(critereDTO.id())
-                .orElseThrow(() -> new EntityNotFoundException("Critere not found with id: " + critereDTO.id()));
+                .orElseThrow(() -> new EntityNotFoundException(CRITERE_NOT_FOUND + critereDTO.id()));
 
         // Update fields
         existingCritere.setScenario(critereDTO.Scenario());
@@ -52,7 +53,7 @@ public class CritereServiceImpl implements CritereService {
     @Override
     public void deleteCritere(Long id) {
         Critere critere = critereRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Critere not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(CRITERE_NOT_FOUND + id));
         critereRepository.delete(critere);
     }
 

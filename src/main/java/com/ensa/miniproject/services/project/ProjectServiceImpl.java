@@ -1,11 +1,10 @@
 package com.ensa.miniproject.services.project;
 
-import com.ensa.miniproject.DTO.EquipeDevelopementDTO;
-import com.ensa.miniproject.DTO.ProductOwnerDTO;
-import com.ensa.miniproject.DTO.ProjectDTO;
-import com.ensa.miniproject.DTO.ScrumMasterDTO;
+import com.ensa.miniproject.dto.EquipeDevelopementDTO;
+import com.ensa.miniproject.dto.ProductOwnerDTO;
+import com.ensa.miniproject.dto.ProjectDTO;
+import com.ensa.miniproject.dto.ScrumMasterDTO;
 import com.ensa.miniproject.entities.Project;
-import com.ensa.miniproject.entities.ScrumMaster;
 import com.ensa.miniproject.execptions.InvalidDateException;
 import com.ensa.miniproject.mapping.EquipeDevelopementMapper;
 import com.ensa.miniproject.mapping.ProductOwnerMapper;

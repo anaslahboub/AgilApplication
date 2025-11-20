@@ -1,10 +1,9 @@
 package com.ensa.miniproject.mapping;
 
-import com.ensa.miniproject.DTO.UserStoryDTO;
+import com.ensa.miniproject.dto.UserStoryDTO;
 import com.ensa.miniproject.entities.UserStory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserStoryMapper {

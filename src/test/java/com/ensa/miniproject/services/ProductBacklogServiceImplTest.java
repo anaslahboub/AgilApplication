@@ -1,10 +1,10 @@
 package com.ensa.miniproject.services;
 
-import com.ensa.miniproject.DTO.ProductBacklogDTO;
+import com.ensa.miniproject.dto.ProductBacklogDTO;
 import com.ensa.miniproject.entities.ProductBacklog;
 import com.ensa.miniproject.mapping.ProductBacklogMapper;
 import com.ensa.miniproject.repository.ProductBacklogRepository;
-import com.ensa.miniproject.services.productBacklog.ProductBacklogServiceImpl;
+import com.ensa.miniproject.services.productbacklog.ProductBacklogServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

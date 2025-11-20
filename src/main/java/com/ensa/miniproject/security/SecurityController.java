@@ -1,5 +1,6 @@
 package com.ensa.miniproject.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class SecurityController {
 
     private final AuthenticationManager authManager;
@@ -37,7 +39,7 @@ public class SecurityController {
                 .map(a -> a.getAuthority())
                 .collect(Collectors.joining(" "));
 
-        System.out.println(authorities);
+        log.info(authorities);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("AgileApp")

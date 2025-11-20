@@ -1,6 +1,6 @@
 package com.ensa.miniproject.mapping;
 
-import com.ensa.miniproject.DTO.SprintDto;
+import com.ensa.miniproject.dto.SprintDto;
 import com.ensa.miniproject.entities.Sprint;
 import org.mapstruct.Mapper;
 

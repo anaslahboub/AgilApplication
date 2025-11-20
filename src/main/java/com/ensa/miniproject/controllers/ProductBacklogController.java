@@ -1,7 +1,7 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.ProductBacklogDTO;
-import com.ensa.miniproject.services.productBacklog.ProductBacklogService;
+import com.ensa.miniproject.dto.ProductBacklogDTO;
+import com.ensa.miniproject.services.productbacklog.ProductBacklogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

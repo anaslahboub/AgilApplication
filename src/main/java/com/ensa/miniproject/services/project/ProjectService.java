@@ -1,9 +1,9 @@
 package com.ensa.miniproject.services.project;
 
-import com.ensa.miniproject.DTO.EquipeDevelopementDTO;
-import com.ensa.miniproject.DTO.ProductOwnerDTO;
-import com.ensa.miniproject.DTO.ProjectDTO;
-import com.ensa.miniproject.DTO.ScrumMasterDTO;
+import com.ensa.miniproject.dto.EquipeDevelopementDTO;
+import com.ensa.miniproject.dto.ProductOwnerDTO;
+import com.ensa.miniproject.dto.ProjectDTO;
+import com.ensa.miniproject.dto.ScrumMasterDTO;
 
 import java.util.List;
 

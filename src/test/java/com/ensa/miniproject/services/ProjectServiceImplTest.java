@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services;
 
-import com.ensa.miniproject.DTO.ProjectDTO;
+import com.ensa.miniproject.dto.ProjectDTO;
 import com.ensa.miniproject.entities.Project;
 import com.ensa.miniproject.execptions.InvalidDateException;
 import com.ensa.miniproject.mapping.ProjectMapper;

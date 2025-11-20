@@ -1,7 +1,7 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.SprintBacklogDTO;
-import com.ensa.miniproject.services.SprintBacklog.SprintBacklogService;
+import com.ensa.miniproject.dto.SprintBacklogDTO;
+import com.ensa.miniproject.services.sprintbacklog.SprintBacklogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

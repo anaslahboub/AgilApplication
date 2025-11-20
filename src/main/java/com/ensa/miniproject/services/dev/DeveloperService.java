@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.dev;
 
-import com.ensa.miniproject.DTO.DeveloperDto;
+import com.ensa.miniproject.dto.DeveloperDto;
 import java.util.List;
 import java.util.Optional;
 

@@ -3,6 +3,7 @@ package com.ensa.miniproject;
 import com.ensa.miniproject.security.UserAuth;
 import com.ensa.miniproject.security.UserAuthRep;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserAuthRep userAuthRep;
@@ -24,7 +26,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRoles(Set.of("ADMIN"));
             userAuthRep.save(admin);
-            System.out.println("✅ Admin user created successfully");
+            log.info("✅ Admin user created successfully");
         }
 
         // Create product owner user if not exists
@@ -34,7 +36,7 @@ public class DataInitializer implements CommandLineRunner {
             po.setPassword(passwordEncoder.encode("po123"));
             po.setRoles(Set.of("PRODUCT_OWNER"));
             userAuthRep.save(po);
-            System.out.println("✅ Product Owner user created successfully");
+            log.info("✅ Product Owner user created successfully");
         }
 
         // Create scrum master user if not exists
@@ -44,7 +46,7 @@ public class DataInitializer implements CommandLineRunner {
             sm.setPassword(passwordEncoder.encode("sm123"));
             sm.setRoles(Set.of("SCRUM_MASTER"));
             userAuthRep.save(sm);
-            System.out.println("✅ Scrum Master user created successfully");
+            log.info("✅ Scrum Master user created successfully");
         }
 
         // Create developer user if not exists
@@ -54,7 +56,7 @@ public class DataInitializer implements CommandLineRunner {
             dev.setPassword(passwordEncoder.encode("dev123"));
             dev.setRoles(Set.of("DEVELOPER"));
             userAuthRep.save(dev);
-            System.out.println("✅ Developer user created successfully");
+            log.info("✅ Developer user created successfully");
         }
     }
 }

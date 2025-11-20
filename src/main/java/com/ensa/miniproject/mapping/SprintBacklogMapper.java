@@ -1,6 +1,6 @@
 package com.ensa.miniproject.mapping;
 
-import com.ensa.miniproject.DTO.SprintBacklogDTO;
+import com.ensa.miniproject.dto.SprintBacklogDTO;
 import com.ensa.miniproject.entities.SprintBacklog;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Repository;

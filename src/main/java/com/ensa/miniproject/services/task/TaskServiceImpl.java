@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.task;
 
-import com.ensa.miniproject.DTO.TaskDTO;
+import com.ensa.miniproject.dto.TaskDTO;
 import com.ensa.miniproject.entities.Critere;
 import com.ensa.miniproject.entities.Task;
 import com.ensa.miniproject.mapping.TaskMapper;
@@ -21,6 +21,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final CritereRepository critereRepository;
+    private final  String TASK_NOT_FOUND = "Task not found with id: ";
 
     @Override
     public TaskDTO createTask(TaskDTO taskDTO) {
@@ -32,14 +33,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDTO getTaskById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + id));
         return taskMapper.fromEntity(task);
     }
 
     @Override
     public TaskDTO updateTask(TaskDTO taskDTO) {
         Task existingTask = taskRepository.findById(taskDTO.id())
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskDTO.id()));
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskDTO.id()));
 
         // Update fields
         existingTask.setTask(taskDTO.task());
@@ -54,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + id));
         taskRepository.delete(task);
     }
 
@@ -70,10 +71,10 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDTO linkTaskToCritere(Long taskId, Long critereId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskId));
 
         Critere critere = critereRepository.findById(critereId)
-                .orElseThrow(() -> new EntityNotFoundException("Critere not found with id: " + critereId));
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + critereId));
 
         // Check if the critere is already linked to another task
         Task existingTaskWithCritere = taskRepository.findByCritereId(critereId);
@@ -90,7 +91,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDTO unlinkTaskFromCritere(Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskId));
 
         if (task.getCritere() == null) {
             throw new IllegalStateException("Task is not linked to any critere");

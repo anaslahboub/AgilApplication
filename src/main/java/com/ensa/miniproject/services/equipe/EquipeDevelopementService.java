@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.equipe;
 
-import com.ensa.miniproject.DTO.EquipeDevelopementDTO;
+import com.ensa.miniproject.dto.EquipeDevelopementDTO;
 import java.util.List;
 
 public interface EquipeDevelopementService {

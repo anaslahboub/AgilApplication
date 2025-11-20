@@ -1,9 +1,9 @@
 package com.ensa.miniproject.controllers;
 
-import com.ensa.miniproject.DTO.EquipeDevelopementDTO;
-import com.ensa.miniproject.DTO.ProductOwnerDTO;
-import com.ensa.miniproject.DTO.ProjectDTO;
-import com.ensa.miniproject.DTO.ScrumMasterDTO;
+import com.ensa.miniproject.dto.EquipeDevelopementDTO;
+import com.ensa.miniproject.dto.ProductOwnerDTO;
+import com.ensa.miniproject.dto.ProjectDTO;
+import com.ensa.miniproject.dto.ScrumMasterDTO;
 import com.ensa.miniproject.services.project.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.ensa.miniproject.services.task;
 
-import com.ensa.miniproject.DTO.TaskDTO;
+import com.ensa.miniproject.dto.TaskDTO;
 
 import java.util.List;
 
