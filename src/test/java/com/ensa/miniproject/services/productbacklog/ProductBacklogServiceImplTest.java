@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -204,10 +203,6 @@ class ProductBacklogServiceImplTest {
         // C'est ICI que la magie opère : on vérifie que les valeurs de l'entité sont restées INCHANGÉES
         assertEquals("Titre Original", existingBacklog.getTitle());
         assertEquals("Description Originale", existingBacklog.getDescription());
-
-        // On vérifie que le repository a été appelé (même si aucune modif n'a été faite, le flux doit aller au bout)
-        // Note : Si votre code service n'a pas de .save() explicite (grâce à @Transactional), cette ligne est optionnelle.
-        // verify(productBacklogRepository).save(existingBacklog);
     }
 
     // ------------------------- DELETE -------------------------
@@ -217,7 +212,6 @@ class ProductBacklogServiceImplTest {
     void deleteProductBacklog_Success() {
         // Act
         productBacklogService.deleteProductBacklog(1L);
-
         // Assert
         verify(productBacklogRepository).deleteById(1L);
     }

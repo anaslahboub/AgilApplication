@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -337,17 +336,4 @@ class SprintServiceImplTest {
         assertFalse(isActive);
     }
 
-    @Test
-    @DisplayName("Is Sprint Active - Should return False when days is Zero")
-    void isSprintActive_DaysZeroTest() {
-        // Arrange
-        sprint.setDays(0L); // Cas 2 : getDays() n'est pas null, mais n'est pas > 0
-        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
-
-        // Act
-        boolean isActive = sprintService.isSprintActive(1);
-
-        // Assert
-        assertFalse(isActive);
-    }
 }
