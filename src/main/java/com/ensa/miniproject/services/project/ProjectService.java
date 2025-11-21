@@ -13,7 +13,6 @@ public interface ProjectService {
     ProjectDTO getProjectById(Long id);
     List<ProjectDTO> getProjects();
     void deleteProject(Long id);
-
     ScrumMasterDTO addScrumMasterToProject(Long idProject,ScrumMasterDTO scrumMasterDTO);
     ProductOwnerDTO addProductOwnerToProject(Long idProject,ProductOwnerDTO productOwnerDTO);
     EquipeDevelopementDTO addEquipeDevelopementToProject(Long idProject,EquipeDevelopementDTO equipeDevelopementDTO);

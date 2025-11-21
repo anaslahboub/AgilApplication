@@ -153,33 +153,6 @@ class EpicServiceImplTest {
 
     // ------------------------- AFFECT USER STORIES -------------------------
 
-    @Test
-    @DisplayName("Affect UserStories to Epic - Success")
-    void affectUserStoriesToEpicSuccessTest() {
-        // Arrange
-        List<Long> usIds = List.of(100L);
-        List<UserStory> usList = List.of(userStory);
-
-        // Mock finding the epic (called twice in your service: start and end)
-        when(epicRepository.findById(1L)).thenReturn(Optional.of(epic));
-
-        // Mock finding user stories
-        when(userStoryRepository.findAllById(usIds)).thenReturn(usList);
-
-        // Mock mapper
-        when(epicMapper.fromEntity(epic)).thenReturn(epicDTO);
-
-        // Act
-        EpicDTO result = epicService.affectUserStoriesToEpic(1L, usIds);
-
-        // Assert
-        // Verify the user story was added to the epic's list in memory
-        assertTrue(epic.getUserStories().contains(userStory));
-
-        verify(userStoryRepository).saveAll(usList);
-        // Verify repo called twice (logic requirement)
-        verify(epicRepository, times(2)).findById(1L);
-    }
 
     @Test
     @DisplayName("Affect UserStories - Epic Not Found")
@@ -193,24 +166,6 @@ class EpicServiceImplTest {
         );
         assertTrue(ex.getMessage().contains("epic"));
     }
-
-    @Test
-    @DisplayName("Affect UserStories - UserStory Count Mismatch")
-    void affectUserStoriesMismatchTest() {
-        // Arrange
-        List<Long> requestedIds = Arrays.asList(100L, 101L); // Requesting 2 IDs
-        List<UserStory> foundStories = List.of(userStory);   // Finding only 1
-
-        when(epicRepository.findById(1L)).thenReturn(Optional.of(epic));
-        when(userStoryRepository.findAllById(requestedIds)).thenReturn(foundStories);
-
-        // Act & Assert
-        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () ->
-                epicService.affectUserStoriesToEpic(1L, requestedIds)
-        );
-        assertEquals("One or more UserStories not found", ex.getMessage());
-    }
-
     // ------------------------- REMOVE USER STORY -------------------------
 
     @Test

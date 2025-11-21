@@ -22,7 +22,7 @@ public class EpicServiceImpl implements EpicService{
     private final EpicRepository epicRepository;
     private final EpicMapper epicMapper;
     private final UserStoryRepository userStoryRepository;
-    public final String EPIC_NOT_FOUND = "epic not found with id: ";
+    public static final String EPIC_NOT_FOUND = "epic not found with id: ";
 
     @Override
     public EpicDTO createEpic(EpicDTO epicDTO) {
@@ -61,7 +61,7 @@ public class EpicServiceImpl implements EpicService{
         return epicRepository.findAll()
                 .stream()
                 .map(epicMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

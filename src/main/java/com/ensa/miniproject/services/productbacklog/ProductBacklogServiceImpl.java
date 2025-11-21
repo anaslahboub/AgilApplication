@@ -34,7 +34,7 @@ public class ProductBacklogServiceImpl implements ProductBacklogService {
     @Transactional
     public ProductBacklogDTO updateProductBacklog(ProductBacklogDTO productBacklogDTO) {
         ProductBacklog productBacklog = productBacklogRepository.findById(productBacklogDTO.id())
-                .orElseThrow(() -> new EntityNotFoundException("ProductBacklog avec ID est " +productBacklogDTO.id() + " non trouvé"));
+                .orElseThrow(() -> new EntityNotFoundException("ProductBacklog avec ID est " +productBacklogDTO.id() ));
         if (productBacklogDTO.epics() != null) {
             productBacklog.setEpics(productBacklogDTO.epics());
         }
@@ -70,7 +70,7 @@ public class ProductBacklogServiceImpl implements ProductBacklogService {
         return productBacklogRepository.findAll()
                 .stream()
                 .map(productBacklogMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

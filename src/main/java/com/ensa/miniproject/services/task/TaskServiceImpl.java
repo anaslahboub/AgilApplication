@@ -21,7 +21,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final CritereRepository critereRepository;
-    private final  String TASK_NOT_FOUND = "Task not found with id: ";
+    private static final  String TASK_NOT_FOUND = "Task not found with id: ";
 
     @Override
     public TaskDTO createTask(TaskDTO taskDTO) {
@@ -43,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskDTO.id()));
 
         // Update fields
-        existingTask.setTask(taskDTO.task());
+        existingTask.setTaskName(taskDTO.task());
         existingTask.setDescription(taskDTO.description());
         existingTask.setCritere(taskDTO.critere());
 
@@ -64,7 +64,7 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAll()
                 .stream()
                 .map(taskMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

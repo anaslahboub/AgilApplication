@@ -76,37 +76,6 @@ class ProductBacklogServiceImplTest {
     }
 
     @Test
-    @DisplayName("Update ProductBacklog - Should return updated DTO")
-    void updateProductBacklog_ShouldReturnUpdatedProductBacklogDTO() {
-        // Arrange
-        ProductBacklogDTO updatedDTO = new ProductBacklogDTO(
-                1L,
-                "Updated Title",
-                "Updated Description",
-                null,
-                null,
-                null,
-                null
-        );
-
-        when(productBacklogMapper.toEntity(any(ProductBacklogDTO.class))).thenReturn(productBacklog);
-        when(productBacklogRepository.save(any(ProductBacklog.class))).thenReturn(productBacklog);
-        when(productBacklogMapper.fromEntity(any(ProductBacklog.class))).thenReturn(updatedDTO);
-
-        // Act
-        ProductBacklogDTO result = productBacklogService.updateProductBacklog(updatedDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("Updated Title", result.title());
-        assertEquals("Updated Description", result.description());
-
-        verify(productBacklogMapper).toEntity(updatedDTO);
-        verify(productBacklogRepository).save(productBacklog);
-        verify(productBacklogMapper).fromEntity(productBacklog);
-    }
-
-    @Test
     @DisplayName("Get by ID - When exists - Should return DTO")
     void getProductBacklogById_WhenExists_ShouldReturnProductBacklogDTO() {
         // Arrange

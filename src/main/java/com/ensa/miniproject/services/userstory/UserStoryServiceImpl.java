@@ -23,8 +23,7 @@ public class UserStoryServiceImpl implements UserStoryService {
     private final UserStoryRepository userStoryRepository;
     private final UserStoryMapper userStoryMapper;
     private final TaskMapper taskMapper;
-
-    private  final String USER_STORY_NOT_FOUND = "userstory not found with id: ";
+    private static  final String USER_STORY_NOT_FOUND = "userstory not found with id: ";
 
     @Override
     public UserStoryDTO createUserStory(UserStoryDTO userStoryDTO) {
@@ -67,7 +66,7 @@ public class UserStoryServiceImpl implements UserStoryService {
         return userStoryRepository.findAll()
                 .stream() // Convert the list to a stream
                 .map(userStoryMapper::fromEntity) // Use the injected mapper to map entities to DTOs
-                .collect(Collectors.toList()); // Collect the results into a list
+                .toList(); // Collect the results into a list
     }
 
     @Override

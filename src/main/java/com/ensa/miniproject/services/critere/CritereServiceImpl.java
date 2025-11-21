@@ -17,7 +17,7 @@ public class CritereServiceImpl implements CritereService {
 
     private final CritereRepository critereRepository;
     private final CritereMapper critereMapper;
-    private  final String CRITERE_NOT_FOUND = "Critere not found with id: ";
+    private static final String CRITERE_NOT_FOUND = "Critere not found with id: ";
 
     @Override
     public CritereDTO createCritere(CritereDTO critereDTO) {
@@ -62,6 +62,6 @@ public class CritereServiceImpl implements CritereService {
         return critereRepository.findAll()
                 .stream()
                 .map(critereMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

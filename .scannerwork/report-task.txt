@@ -2,5 +2,5 @@ projectKey=agile-app-mini-project
 serverUrl=http://localhost:9000
 serverVersion=25.11.0.114957
 dashboardUrl=http://localhost:9000/dashboard?id=agile-app-mini-project
-ceTaskId=519006f3-fb85-406c-972b-d650c51ff72f
-ceTaskUrl=http://localhost:9000/api/ce/task?id=519006f3-fb85-406c-972b-d650c51ff72f
+ceTaskId=ff52d5b5-26c3-47cb-924f-4e1d88f64f76
+ceTaskUrl=http://localhost:9000/api/ce/task?id=ff52d5b5-26c3-47cb-924f-4e1d88f64f76

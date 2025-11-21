@@ -1,6 +1,5 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.persistence.Entity;
 import lombok.Getter;
 
 @Getter

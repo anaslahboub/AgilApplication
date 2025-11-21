@@ -17,7 +17,7 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
     private final ScrumMasterRepository scrumMasterRepository;
     private final ScrumMasterMapper scrumMasterMapper;
 
-    private final String SCRUM_MASTER_NOT_FOUND = "No scrummaster found with id: ";
+    private static final String SCRUM_MASTER_NOT_FOUND = "No scrummaster found with id: ";
 
     @Autowired
     public ScrumMasterServiceImpl(ScrumMasterRepository scrumMasterRepository,
@@ -69,6 +69,6 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
         return scrumMasterRepository.findAll()
                 .stream() // Convert the list to a stream
                 .map(scrumMasterMapper::fromEntity) // Use MapStruct mapper to convert each entity to DTO
-                .collect(Collectors.toList()); // Collect the results into a list
+                .toList(); // Collect the results into a list
     }
 }

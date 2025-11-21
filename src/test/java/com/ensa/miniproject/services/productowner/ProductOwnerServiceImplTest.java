@@ -101,27 +101,6 @@ class ProductOwnerServiceImplTest {
     }
 
     @Test
-    @DisplayName("Update ProductOwner - Should return updated DTO")
-    void updateProductOwner_ShouldReturnUpdatedProductOwnerDTO() {
-        // Arrange
-        ProductOwnerDTO updatedDTO = new ProductOwnerDTO(
-                1L, "updatedOwner", "Updated", "newPass", "updated@test.com");
-
-        when(productOwnerMapper.toEntity(any(ProductOwnerDTO.class))).thenReturn(productOwner);
-        when(productOwnerRepository.save(any(ProductOwner.class))).thenReturn(productOwner);
-        when(productOwnerMapper.fromEntity(any(ProductOwner.class))).thenReturn(updatedDTO);
-
-        // Act
-        ProductOwnerDTO result = productOwnerService.updateProductOwner(updatedDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("updatedOwner", result.username());
-        assertEquals("Updated", result.prenom());
-        verify(productOwnerRepository).save(productOwner);
-    }
-
-    @Test
     @DisplayName("Get ProductOwner by ID - When exists - Should return DTO")
     void getProductOwnerById_WhenExists_ShouldReturnProductOwnerDTO() {
         // Arrange

@@ -1,6 +1,5 @@
 package com.ensa.miniproject.entities;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

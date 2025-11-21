@@ -20,7 +20,7 @@ public class SprintBacklogServiceImpl implements SprintBacklogService {
     private final EpicRepository epicRepository;
     private final UserStoryRepository userStoryRepository;
     private final SprintBacklogMapper sprintBacklogMapper;
-    private final String SPRINT_BACKLOG = "sprintbacklog";
+    private static final String SPRINT_BACKLOG = "sprintbacklog";
 
     @Override
     @Transactional
@@ -64,7 +64,7 @@ public class SprintBacklogServiceImpl implements SprintBacklogService {
         return sprintBacklogRepository.findAll()
                 .stream()
                 .map(sprintBacklogMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -126,7 +126,6 @@ public class SprintBacklogServiceImpl implements SprintBacklogService {
                 .orElseThrow(() -> new ResourceNotFoundException("userstory", "id", userStoryId));
         sprint.getUserStories().remove(userStory);
         userStoryRepository.save(userStory);
-
         return sprintBacklogMapper.fromEntity(sprint);
     }
 }

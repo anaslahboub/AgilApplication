@@ -49,7 +49,7 @@ class TaskServiceImplTest {
         // Setup Task Entity
         task = new Task();
         task.setId(1L);
-        task.setTask("Implement Login");
+        task.setTaskName("Implement Login");
         task.setDescription("Create login page");
         task.setEtat(Etat.EN_ATTENTE); // Assuming Etat enum exists based on DTO
 
@@ -130,7 +130,7 @@ class TaskServiceImplTest {
         assertEquals("Updated Name", result.task());
 
         // Verify internal state
-        assertEquals("Updated Name", task.getTask());
+        assertEquals("Updated Name", task.getTaskName());
         assertEquals(critere, task.getCritere());
         verify(taskRepository).save(task);
     }

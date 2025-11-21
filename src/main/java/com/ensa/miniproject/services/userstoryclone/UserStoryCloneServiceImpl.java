@@ -21,9 +21,7 @@ public class UserStoryCloneServiceImpl implements UserStoryCloneService {
     private final UserStoryCloneRepository userStoryCloneRepository;
     private final UserStoryRepository userStoryRepository;
     private final UserStoryCloneMapper userStoryCloneMapper;
-
-
-    private final String USER_STORY_CLONE_NOT_FOUND ="userstoryclone not found with id: ";
+    private static final String USER_STORY_CLONE_NOT_FOUND ="userstoryclone not found with id: ";
 
     @Override
     @Transactional
@@ -75,7 +73,7 @@ public class UserStoryCloneServiceImpl implements UserStoryCloneService {
         return userStoryCloneRepository.findAll()
                 .stream()
                 .map(userStoryCloneMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

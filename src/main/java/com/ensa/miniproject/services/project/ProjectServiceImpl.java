@@ -40,12 +40,19 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public ProjectDTO updateProject(ProjectDTO projectDTO) {
         if (projectDTO.dateDebut().isAfter(projectDTO.dateFin())) {
             throw new InvalidDateException("La date de début doit être inférieure à la date de fin.");
         }
-        Project project = projectMapper.toEntity(projectDTO);
-        project = projectRepository.save(project);
+        Project project = projectRepository.findById(projectDTO.id())
+                .orElseThrow(() -> new EntityNotFoundException("Projet avec cette ID " + projectDTO.id() + " non trouvé"));
+        if (projectDTO.nom()!=null) project.setNom(projectDTO.nom());
+        if (projectDTO.dateFin()!=null) project.setDateFin(projectDTO.dateFin());
+        if (projectDTO.productBacklog()!=null) project.setProductBacklog(projectDTO.productBacklog());
+        if (projectDTO.owner()!=null) project.setOwner(projectDTO.owner());
+        if (projectDTO.scrumMaster()!=null) project.setScrumMaster(projectDTO.scrumMaster());
+
         return projectMapper.fromEntity(project);
     }
 
@@ -61,7 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findAll()
                 .stream()
                 .map(projectMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

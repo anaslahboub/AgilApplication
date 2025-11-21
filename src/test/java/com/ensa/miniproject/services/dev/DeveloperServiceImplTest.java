@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DeveloperServiceImplTest {
+class DeveloperServiceImplTest {
 
     @Mock
     private DeveloperRepository developerRepository;
@@ -38,7 +38,7 @@ public class DeveloperServiceImplTest {
     private EquipeDevelopement equipe;
 
     @BeforeEach
-    public void setUp() {
+     void setUp() {
         // Setup Developer Entity
         developer = new Developer();
         developer.setId(1L);

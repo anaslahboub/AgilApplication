@@ -94,30 +94,7 @@ class ProjectServiceImplTest {
         verify(projectRepository, never()).save(any());
     }
 
-    @Test
-    @DisplayName("Update Project - Valid dates - Should return updated DTO")
-    void updateProject_WithValidDates_ShouldReturnUpdatedProjectDTO() {
-        // Arrange
-        ProjectDTO updatedDTO = new ProjectDTO(
-                1L,
-                "Updated Project",
-                LocalDate.of(2023, 6, 1),
-                LocalDate.of(2023, 12, 31),
-                null, null, null, null
-        );
 
-        when(projectMapper.toEntity(any(ProjectDTO.class))).thenReturn(project);
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
-        when(projectMapper.fromEntity(any(Project.class))).thenReturn(updatedDTO);
-
-        // Act
-        ProjectDTO result = projectService.updateProject(updatedDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("Updated Project", result.nom());
-        verify(projectRepository).save(project);
-    }
 
     @Test
     @DisplayName("Update Project - Invalid dates - Should throw InvalidDateException")

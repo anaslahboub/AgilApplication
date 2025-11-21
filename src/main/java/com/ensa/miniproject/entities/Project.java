@@ -1,12 +1,10 @@
 package com.ensa.miniproject.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Data

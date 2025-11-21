@@ -6,6 +6,7 @@ import com.ensa.miniproject.entities.SprintBacklog;
 import com.ensa.miniproject.mapping.SprintMapper;
 import com.ensa.miniproject.repository.SprintBacklogRepository;
 import com.ensa.miniproject.repository.SprintRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
     private final SprintBacklogRepository sprintBacklogRepository;
-    private final String SPRING_NOT_FOUND = "Sprint not found with ID: ";
+    private static final String SPRING_NOT_FOUND = "Sprint not found with ID: ";
 
     private final SprintMapper sprintMapper;
     @Override
@@ -33,7 +34,7 @@ public class SprintServiceImpl implements SprintService {
     public List<SprintDto> getAllSprints() {
         return sprintRepository.findAll().stream()
                 .map(sprintMapper::mapToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -73,15 +74,15 @@ public class SprintServiceImpl implements SprintService {
     public List<SprintDto> findSprintsByDuration(Long days) {
         return sprintRepository.findByDays(days).stream()
                 .map(sprintMapper::mapToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public SprintDto assignSprintBacklog(int sprintId, Long backlogId) {
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new RuntimeException(SPRING_NOT_FOUND +sprintId ));
+                .orElseThrow(() -> new EntityNotFoundException(SPRING_NOT_FOUND +sprintId ));
         SprintBacklog backlog = sprintBacklogRepository.findById(backlogId)
-                .orElseThrow(() -> new RuntimeException("sprintbacklog not found"));
+                .orElseThrow(() -> new EntityNotFoundException("sprintbacklog not found"));
 
         sprint.setSprintBacklog(backlog);
         return sprintMapper.mapToDto(sprintRepository.save(sprint));
@@ -91,7 +92,7 @@ public class SprintServiceImpl implements SprintService {
     public List<SprintDto> getSprintsWithoutBacklog() {
         return sprintRepository.findBySprintBacklogIsNull().stream()
                 .map(sprintMapper::mapToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

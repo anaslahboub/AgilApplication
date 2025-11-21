@@ -21,7 +21,7 @@ public class EquipeDevelopementServiceImpl implements EquipeDevelopementService 
     private final EquipeDevelopementRepository equipeRepository;
     private final DeveloperRepository developerRepository;
     private final EquipeDevelopementMapper equipeDevelopementMapper;
-    private final String EQUIPE_DEVELOPMENT_NOT_FOUND = "Equipe not found with id: ";
+    private static  final String EQUIPE_DEVELOPMENT_NOT_FOUND = "Equipe not found with id: ";
 
     @Override
     public EquipeDevelopementDTO createEquipe(EquipeDevelopementDTO equipeDevelopementDTO) {

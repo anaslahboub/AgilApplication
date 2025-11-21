@@ -45,7 +45,7 @@ public class ProductOwnerServiceImpl implements ProductOwnerService {
     @Override
     public ProductOwnerDTO getProductOwnerById(Long id) {
         ProductOwner productOwner = productOwnerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("ProductOwner avec ID " + id + " non trouvé"));
+                .orElseThrow(() -> new EntityNotFoundException("ProductOwner avec ID " + id + " non trouvé in database "));
         return productOwnerMapper.fromEntity(productOwner);
     }
 
@@ -54,7 +54,7 @@ public class ProductOwnerServiceImpl implements ProductOwnerService {
         return productOwnerRepository.findAll()
                 .stream()
                 .map(productOwnerMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

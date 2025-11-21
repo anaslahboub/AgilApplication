@@ -22,7 +22,7 @@ public class DeveloperServiceImpl implements DeveloperService {
     private final DeveloperMapper developerMapper;
     private final EquipeDevelopementRepository equipeRepository;
 
-    private final String DEVELOPER_NOT_FOUND = "Developer not found";
+    private static final String DEVELOPER_NOT_FOUND = "Developer not found";
 
 
     @Override
@@ -36,7 +36,7 @@ public class DeveloperServiceImpl implements DeveloperService {
         return developerRepository.findAll()
                 .stream()
                 .map(developerMapper::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

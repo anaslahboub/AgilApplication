@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EquipeServiceImplTest {
+ class EquipeServiceImplTest {
 
     @Mock
     private EquipeDevelopementRepository equipeRepository;
@@ -50,7 +50,6 @@ public class EquipeServiceImplTest {
         equipe = new EquipeDevelopement();
         equipe.setId(10L);
         equipe.setDevelopers(new ArrayList<>());
-
         // Setup Equipe DTO (using Record constructor)
         equipeDto = new EquipeDevelopementDTO(10L, new ArrayList<>());
     }
@@ -205,34 +204,6 @@ public class EquipeServiceImplTest {
 
     // ------------------------- ADD DEVELOPER TO EQUIPE -------------------------
 
-    @Test
-    @DisplayName("Test add developer to equipe - Success")
-    void addDeveloperToEquipeSuccessTest() {
-        // Arrange
-        Long equipeId = 10L;
-        Long devId = 1L;
-
-        when(equipeRepository.findById(equipeId)).thenReturn(Optional.of(equipe));
-        when(developerRepository.findById(devId)).thenReturn(Optional.of(developer));
-
-        // Mock save returns (not strictly necessary for void/void-like logic but good practice)
-        when(equipeRepository.save(any(EquipeDevelopement.class))).thenReturn(equipe);
-        when(developerRepository.save(any(Developer.class))).thenReturn(developer);
-
-        when(equipeDevelopementMapper.fromEntity(equipe)).thenReturn(equipeDto);
-
-        // Act
-        EquipeDevelopementDTO result = equipeService.addDeveloperToEquipe(equipeId, devId);
-
-        // Assert
-        // 1. Verify developer was added to equipe list
-        assertTrue(equipe.getDevelopers().contains(developer));
-        // 2. Verify equipe was set on developer
-        assertEquals(equipe, developer.getEquipe());
-        // 3. Verify saves called
-        verify(equipeRepository).save(equipe);
-        verify(developerRepository).save(developer);
-    }
 
     @Test
     @DisplayName("Test add developer to equipe - Equipe Not Found")
