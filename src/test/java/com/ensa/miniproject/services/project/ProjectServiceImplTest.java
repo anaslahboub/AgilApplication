@@ -167,6 +167,39 @@ class ProjectServiceImplTest {
         verify(projectRepository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("Update Project - Partial Update (Null fields should be ignored)")
+    void updateProject_WithNullFields_ShouldNotUpdateEntity() {
+        // Arrange
+        // On crée un DTO avec des dates valides (pour passer le 1er check)
+        // MAIS tous les autres champs sont NULL
+        ProjectDTO partialDto = new ProjectDTO(
+                1L,
+                null, // Nom null -> Ne doit pas écraser le nom existant
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 12, 31),
+                null, // ProductBacklog null
+                null, // Owner null
+                null, // ScrumMaster null
+                null  // Equipe null
+        );
+
+        // On configure le mock pour retourner le projet existant
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        // On mock le retour du mapper
+        when(projectMapper.fromEntity(project)).thenReturn(partialDto);
+        when(projectRepository.save(project)).thenReturn(project);
+        // Act
+        projectService.updateProject(partialDto);
+
+        // Assert
+        // Vérification cruciale : Le nom du projet en mémoire ne doit PAS avoir changé
+        assertEquals("Test Project", project.getNom());
+
+        // On vérifie que le repository a bien été appelé pour sauvegarder l'état inchangé
+        verify(projectRepository).save(project);
+    }
+
     // ------------------------- GETTERS -------------------------
 
     @Test

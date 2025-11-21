@@ -323,4 +323,31 @@ class SprintServiceImplTest {
         // Assert
         assertFalse(isActive);
     }
+    @Test
+    @DisplayName("Is Sprint Active - Should return False when days is Null")
+    void isSprintActive_DaysNullTest() {
+        // Arrange
+        sprint.setDays(null); // Cas 1 : getDays() est null
+        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
+
+        // Act
+        boolean isActive = sprintService.isSprintActive(1);
+
+        // Assert
+        assertFalse(isActive);
+    }
+
+    @Test
+    @DisplayName("Is Sprint Active - Should return False when days is Zero")
+    void isSprintActive_DaysZeroTest() {
+        // Arrange
+        sprint.setDays(0L); // Cas 2 : getDays() n'est pas null, mais n'est pas > 0
+        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
+
+        // Act
+        boolean isActive = sprintService.isSprintActive(1);
+
+        // Assert
+        assertFalse(isActive);
+    }
 }

@@ -169,6 +169,47 @@ class ProductBacklogServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> productBacklogService.updateProductBacklog(dto));
     }
 
+
+    @Test
+    @DisplayName("Update ProductBacklog - Partial Update (Null fields should be ignored)")
+    void updateProductBacklog_WithNullFields_ShouldNotUpdateEntity() {
+        // Arrange
+        // 1. On prépare une entité existante avec des données
+        ProductBacklog existingBacklog = new ProductBacklog();
+        existingBacklog.setId(1L);
+        existingBacklog.setTitle("Titre Original");
+        existingBacklog.setDescription("Description Originale");
+        // (On suppose que les autres champs ont aussi des valeurs par défaut)
+
+        // 2. On crée un DTO avec l'ID, mais TOUS les autres champs à NULL
+        ProductBacklogDTO partialDto = new ProductBacklogDTO(
+                1L,
+                null, // title est null
+                null, // description est null
+                null, // status est null
+                null, // priority est null
+                null, // userStories est null
+                null  // epics est null
+        );
+
+        // 3. Configuration des Mocks
+        when(productBacklogRepository.findById(1L)).thenReturn(Optional.of(existingBacklog));
+        // Le retour du mapper n'importe pas vraiment ici, on peut renvoyer n'importe quoi
+        when(productBacklogMapper.fromEntity(any(ProductBacklog.class))).thenReturn(partialDto);
+
+        // Act
+        productBacklogService.updateProductBacklog(partialDto);
+
+        // Assert
+        // C'est ICI que la magie opère : on vérifie que les valeurs de l'entité sont restées INCHANGÉES
+        assertEquals("Titre Original", existingBacklog.getTitle());
+        assertEquals("Description Originale", existingBacklog.getDescription());
+
+        // On vérifie que le repository a été appelé (même si aucune modif n'a été faite, le flux doit aller au bout)
+        // Note : Si votre code service n'a pas de .save() explicite (grâce à @Transactional), cette ligne est optionnelle.
+        // verify(productBacklogRepository).save(existingBacklog);
+    }
+
     // ------------------------- DELETE -------------------------
 
     @Test

@@ -51,7 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (projectDTO.productBacklog()!=null) project.setProductBacklog(projectDTO.productBacklog());
         if (projectDTO.owner()!=null) project.setOwner(projectDTO.owner());
         if (projectDTO.scrumMaster()!=null) project.setScrumMaster(projectDTO.scrumMaster());
-
+        project = projectRepository.save(project);
         return projectMapper.fromEntity(project);
     }
 
