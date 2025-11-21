@@ -26,8 +26,6 @@ public class ScrumMasterServiceImpl implements ScrumMasterService {
                                   ) {
         this.scrumMasterRepository = scrumMasterRepository;
         this.scrumMasterMapper = scrumMasterMapper;
-        
-
     }
     @Override
     public ScrumMasterDTO createScrumMaster(ScrumMasterDTO scrumMasterDTO) {

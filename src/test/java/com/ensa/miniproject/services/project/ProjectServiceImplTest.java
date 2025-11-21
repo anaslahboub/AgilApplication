@@ -1,11 +1,10 @@
-package com.ensa.miniproject.services;
+package com.ensa.miniproject.services.project;
 
 import com.ensa.miniproject.dto.ProjectDTO;
 import com.ensa.miniproject.entities.Project;
 import com.ensa.miniproject.execptions.InvalidDateException;
 import com.ensa.miniproject.mapping.ProjectMapper;
 import com.ensa.miniproject.repository.ProjectRepository;
-import com.ensa.miniproject.services.project.ProjectServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

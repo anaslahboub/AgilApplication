@@ -1,10 +1,9 @@
-package com.ensa.miniproject.services;
+package com.ensa.miniproject.services.productowner;
 
 import com.ensa.miniproject.dto.*;
 import com.ensa.miniproject.entities.*;
 import com.ensa.miniproject.mapping.*;
 import com.ensa.miniproject.repository.*;
-import com.ensa.miniproject.services.productowner.ProductOwnerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

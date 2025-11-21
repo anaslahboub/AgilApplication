@@ -1,11 +1,12 @@
 package com.ensa.miniproject.dto;
 
 import com.ensa.miniproject.entities.EquipeDevelopement;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-@Data
-@RequiredArgsConstructor
+@Setter @Getter @ToString @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class DeveloperDto {
         private Long id;
         private String username;

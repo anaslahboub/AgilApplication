@@ -1,11 +1,10 @@
-package com.ensa.miniproject.services;
+package com.ensa.miniproject.services.scrummaster;
 
 import com.ensa.miniproject.dto.ScrumMasterDTO;
 import com.ensa.miniproject.entities.Project;
 import com.ensa.miniproject.entities.ScrumMaster;
 import com.ensa.miniproject.mapping.ScrumMasterMapper;
 import com.ensa.miniproject.repository.ScrumMasterRepository;
-import com.ensa.miniproject.services.scrummaster.ScrumMasterServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

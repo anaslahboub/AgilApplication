@@ -8,6 +8,6 @@ public record TaskDTO(
         String task,
         String description,
         Etat etat,
-        Critere critere
+        Etat enCours, Critere critere
 ) {
 }
