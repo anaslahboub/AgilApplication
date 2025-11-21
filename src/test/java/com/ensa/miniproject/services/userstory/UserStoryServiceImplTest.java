@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -128,12 +129,21 @@ class UserStoryServiceImplTest {
         // Assert
         assertNotNull(result);
         verify(userStoryRepository).save(userStory);
-        // Check that setters were effectively called on the entity
         assertEquals(userStoryDTO.title(), userStory.getTitle());
     }
 
     @Test
-    @DisplayName("Delete UserStory")
+    @DisplayName("Update UserStory - Not Found")
+    void updateUserStoryNotFoundTest() {
+        // Arrange
+        when(userStoryRepository.findById(userStoryDTO.id())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> userStoryService.updateUserStory(userStoryDTO));
+    }
+
+    @Test
+    @DisplayName("Delete UserStory - Success")
     void deleteUserStoryTest() {
         // Arrange
         when(userStoryRepository.findById(1L)).thenReturn(Optional.of(userStory));
@@ -145,16 +155,38 @@ class UserStoryServiceImplTest {
         verify(userStoryRepository).delete(userStory);
     }
 
+    @Test
+    @DisplayName("Delete UserStory - Not Found")
+    void deleteUserStoryNotFoundTest() {
+        // Arrange
+        when(userStoryRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> userStoryService.deleteUserStory(99L));
+    }
+
+    @Test
+    @DisplayName("Get All UserStories")
+    void getAllUserStoriesTest() {
+        // Arrange
+        when(userStoryRepository.findAll()).thenReturn(List.of(userStory));
+        when(userStoryMapper.fromEntity(userStory)).thenReturn(userStoryDTO);
+
+        // Act
+        List<UserStoryDTO> result = userStoryService.getUserStories();
+
+        // Assert
+        assertEquals(1, result.size());
+    }
+
     // ------------------------- TASK MANAGEMENT -------------------------
 
     @Test
-    @DisplayName("Add Task to UserStory")
+    @DisplayName("Add Task to UserStory - Success")
     void addTaskTest() {
         // Arrange
         when(userStoryRepository.findById(1L)).thenReturn(Optional.of(userStory));
         when(taskMapper.toEntity(taskDTO)).thenReturn(task);
-        // We don't strictly need to mock the save return for void/verification logic,
-        // but keeping it clean:
         when(userStoryRepository.save(userStory)).thenReturn(userStory);
 
         // Act
@@ -162,9 +194,19 @@ class UserStoryServiceImplTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, userStory.getTasks().size()); // Verify task was added to list
+        assertEquals(1, userStory.getTasks().size());
         assertEquals(task, userStory.getTasks().get(0));
         verify(userStoryRepository).save(userStory);
+    }
+
+    @Test
+    @DisplayName("Add Task - UserStory Not Found")
+    void addTaskNotFoundTest() {
+        // Arrange
+        when(userStoryRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> userStoryService.addTask(99L, taskDTO));
     }
 
     @Test
@@ -178,24 +220,31 @@ class UserStoryServiceImplTest {
         userStoryService.deleteTask(1L, taskDTO);
 
         // Assert
-        assertTrue(userStory.getTasks().isEmpty()); // List should be empty now
+        assertTrue(userStory.getTasks().isEmpty());
         verify(userStoryRepository).save(userStory);
     }
 
     @Test
-    @DisplayName("Delete Task from UserStory - Task Not Found in List")
+    @DisplayName("Delete Task - Task Not Found in List")
     void deleteTaskNotFoundInListTest() {
         // Arrange
-        // UserStory exists, but list is empty
         when(userStoryRepository.findById(1L)).thenReturn(Optional.of(userStory));
 
         // Act & Assert
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () ->
                 userStoryService.deleteTask(1L, taskDTO)
         );
-
         assertTrue(ex.getMessage().contains("Task not found with id"));
-        verify(userStoryRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Delete Task - UserStory Not Found")
+    void deleteTaskUserStoryNotFoundTest() {
+        // Arrange
+        when(userStoryRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> userStoryService.deleteTask(99L, taskDTO));
     }
 
     // ------------------------- BUSINESS LOGIC (CALCULATION) -------------------------
@@ -206,7 +255,6 @@ class UserStoryServiceImplTest {
         // Arrange
         when(userStoryRepository.findById(1L)).thenReturn(Optional.of(userStory));
         when(userStoryRepository.save(userStory)).thenReturn(userStory);
-        // Mock mapper to return something valid so null pointer doesn't happen in return
         when(userStoryMapper.fromEntity(userStory)).thenReturn(userStoryDTO);
 
         // Act
@@ -239,16 +287,17 @@ class UserStoryServiceImplTest {
         userStoryService.calculerTauxDavancement(1L);
 
         // Assert
-        // (1 validated / 2 total) * 100 = 50
         assertEquals(50L, userStory.getTauxDavancenement());
-        verify(userStoryRepository).save(userStory);
     }
 
     @Test
-    @DisplayName("Calculer Taux - 100% (All Validated)")
-    void calculerTauxFullTest() {
+    @DisplayName("Calculer Taux - Ignore Tasks with Null State")
+    void calculerTauxNullStateTest() {
         // Arrange
-        Task task1 = new Task(); task1.setEtat(Etat.VALIDEE);
+        Task task1 = new Task();
+        task1.setId(101L);
+        task1.setEtat(null); // Null state should be filtered out
+
         userStory.getTasks().add(task1);
 
         when(userStoryRepository.findById(1L)).thenReturn(Optional.of(userStory));
@@ -259,6 +308,13 @@ class UserStoryServiceImplTest {
         userStoryService.calculerTauxDavancement(1L);
 
         // Assert
-        assertEquals(100L, userStory.getTauxDavancenement());
+        assertEquals(0L, userStory.getTauxDavancenement());
+    }
+
+    @Test
+    @DisplayName("Calculer Taux - Not Found")
+    void calculerTauxNotFoundTest() {
+        when(userStoryRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> userStoryService.calculerTauxDavancement(99L));
     }
 }

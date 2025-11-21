@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @AllArgsConstructor
 @Service
@@ -21,7 +21,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final CritereRepository critereRepository;
-    private static final  String TASK_NOT_FOUND = "Task not found with id: ";
 
     @Override
     public TaskDTO createTask(TaskDTO taskDTO) {

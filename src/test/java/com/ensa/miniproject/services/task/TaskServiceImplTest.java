@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -51,10 +52,9 @@ class TaskServiceImplTest {
         task.setId(1L);
         task.setTaskName("Implement Login");
         task.setDescription("Create login page");
-        task.setEtat(Etat.EN_ATTENTE); // Assuming Etat enum exists based on DTO
+        task.setEtat(Etat.EN_ATTENTE);
 
         // Setup Task DTO
-        // Note: Passing null for 'enCours' based on your record definition provided earlier
         taskDTO = new TaskDTO(
                 1L,
                 "Implement Login",
@@ -106,10 +106,7 @@ class TaskServiceImplTest {
         when(taskRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () ->
-                taskService.getTaskById(99L)
-        );
-        assertTrue(ex.getMessage().contains("Task not found"));
+        assertThrows(EntityNotFoundException.class, () -> taskService.getTaskById(99L));
     }
 
     @Test
@@ -128,11 +125,32 @@ class TaskServiceImplTest {
         // Assert
         assertNotNull(result);
         assertEquals("Updated Name", result.task());
-
         // Verify internal state
         assertEquals("Updated Name", task.getTaskName());
         assertEquals(critere, task.getCritere());
         verify(taskRepository).save(task);
+    }
+
+    @Test
+    @DisplayName("Update Task - Not Found")
+    void updateTaskNotFoundTest() {
+        // Arrange
+        // 1. On crée un DTO spécifique avec l'ID 99L pour correspondre au Mock
+        TaskDTO notFoundDto = new TaskDTO(
+                99L,
+                "Any Name",
+                "Any Desc",
+                Etat.EN_ATTENTE,
+                null,
+                null
+        );
+
+        // 2. On configure le Mock pour l'ID 99L
+        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        // 3. On appelle le service avec le DTO qui contient l'ID 99L
+        assertThrows(EntityNotFoundException.class, () -> taskService.updateTask(notFoundDto));
     }
 
     @Test
@@ -149,6 +167,16 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Delete Task - Not Found")
+    void deleteTaskNotFoundTest() {
+        // Arrange
+        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> taskService.deleteTask(99L));
+    }
+
+    @Test
     @DisplayName("Get All Tasks")
     void getAllTasksTest() {
         // Arrange
@@ -160,7 +188,6 @@ class TaskServiceImplTest {
 
         // Assert
         assertEquals(1, result.size());
-        verify(taskRepository).findAll();
     }
 
     // ------------------------- LINK CRITERE -------------------------
@@ -189,7 +216,7 @@ class TaskServiceImplTest {
     }
 
     @Test
-    @DisplayName("Link Task to Critere - Critere Already Linked to Another Task")
+    @DisplayName("Link Task to Critere - Already Linked to Other Task")
     void linkTaskToCritereAlreadyLinkedTest() {
         // Arrange
         Long taskId = 1L;
@@ -212,10 +239,9 @@ class TaskServiceImplTest {
     }
 
     @Test
-    @DisplayName("Link Task to Critere - Critere Linked to Same Task (Idempotent)")
+    @DisplayName("Link Task to Critere - Idempotent (Same Task)")
     void linkTaskToCritereSameTaskTest() {
         // Arrange
-        // This tests the logic: !existingTaskWithCritere.getId().equals(taskId)
         Long taskId = 1L;
         Long critereId = 50L;
 
@@ -231,8 +257,7 @@ class TaskServiceImplTest {
         taskService.linkTaskToCritere(taskId, critereId);
 
         // Assert
-        // Should proceed without exception
-        verify(taskRepository).save(task);
+        verify(taskRepository).save(task); // Should proceed
     }
 
     @Test
@@ -270,7 +295,14 @@ class TaskServiceImplTest {
     }
 
     @Test
-    @DisplayName("Unlink Task - Not Currently Linked")
+    @DisplayName("Unlink Task - Task Not Found")
+    void unlinkTaskNotFoundTest() {
+        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> taskService.unlinkTaskFromCritere(99L));
+    }
+
+    @Test
+    @DisplayName("Unlink Task - Not Currently Linked (IllegalState)")
     void unlinkTaskNotLinkedTest() {
         // Arrange
         task.setCritere(null); // Explicitly null

@@ -13,8 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @AllArgsConstructor
 @Service
@@ -23,7 +22,6 @@ public class UserStoryServiceImpl implements UserStoryService {
     private final UserStoryRepository userStoryRepository;
     private final UserStoryMapper userStoryMapper;
     private final TaskMapper taskMapper;
-    private static  final String USER_STORY_NOT_FOUND = "userstory not found with id: ";
 
     @Override
     public UserStoryDTO createUserStory(UserStoryDTO userStoryDTO) {

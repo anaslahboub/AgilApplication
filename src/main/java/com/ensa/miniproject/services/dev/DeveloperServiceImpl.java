@@ -9,10 +9,9 @@ import com.ensa.miniproject.repository.EquipeDevelopementRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -21,9 +20,6 @@ public class DeveloperServiceImpl implements DeveloperService {
     private final  DeveloperRepository developerRepository;
     private final DeveloperMapper developerMapper;
     private final EquipeDevelopementRepository equipeRepository;
-
-    private static final String DEVELOPER_NOT_FOUND = "Developer not found";
-
 
     @Override
     public DeveloperDto saveDeveloper(DeveloperDto developerDto) {

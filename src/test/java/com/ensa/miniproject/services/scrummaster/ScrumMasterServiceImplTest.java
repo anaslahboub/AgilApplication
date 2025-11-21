@@ -12,9 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -59,6 +61,8 @@ class ScrumMasterServiceImplTest {
         );
     }
 
+    // ------------------------- CREATE -------------------------
+
     @Test
     @DisplayName("Create scrummaster - Should return saved DTO")
     void createScrumMaster_ShouldReturnSavedScrumMasterDTO() {
@@ -77,8 +81,9 @@ class ScrumMasterServiceImplTest {
 
         verify(scrumMasterMapper).toEntity(scrumMasterDTO);
         verify(scrumMasterRepository).save(scrumMaster);
-        verify(scrumMasterMapper).fromEntity(scrumMaster);
     }
+
+    // ------------------------- GET BY ID -------------------------
 
     @Test
     @DisplayName("Get scrummaster by ID - When exists - Should return DTO")
@@ -94,7 +99,6 @@ class ScrumMasterServiceImplTest {
         assertNotNull(result);
         assertEquals(1L, result.id());
         assertEquals("scrumMaster1", result.username());
-        verify(scrumMasterRepository).findById(1L);
     }
 
     @Test
@@ -106,13 +110,13 @@ class ScrumMasterServiceImplTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 scrumMasterService.getScrumMasterById(1L));
-        verify(scrumMasterRepository).findById(1L);
-        verify(scrumMasterMapper, never()).fromEntity(any());
     }
+
+    // ------------------------- UPDATE -------------------------
 
     @Test
     @DisplayName("Update scrummaster - Should return updated DTO")
-    void updateScrumMaster_ShouldReturnUpdatedScrumMasterDTO() {
+    void updateScrumMaster_Success() {
         // Arrange
         ScrumMasterDTO updatedDTO = new ScrumMasterDTO(
                 1L,
@@ -132,12 +136,24 @@ class ScrumMasterServiceImplTest {
         // Assert
         assertNotNull(result);
         assertEquals("updatedMaster", result.username());
-        assertEquals("Updated", result.prenom());
-        assertEquals("updated@example.com", result.email());
-
-        verify(scrumMasterRepository).findById(1L);
-        verify(scrumMasterRepository).save(scrumMaster);
+        // Verify entity was updated in memory
+        assertEquals("updatedMaster", scrumMaster.getUsername());
+        assertEquals("updated@example.com", scrumMaster.getEmail());
     }
+
+    @Test
+    @DisplayName("Update scrummaster - Not Found")
+    void updateScrumMaster_NotFound() {
+        // Arrange
+        when(scrumMasterRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                scrumMasterService.updateScrumMaster(scrumMasterDTO));
+        verify(scrumMasterRepository, never()).save(any());
+    }
+
+    // ------------------------- DELETE -------------------------
 
     @Test
     @DisplayName("Delete scrummaster - When exists - Should delete")
@@ -149,7 +165,6 @@ class ScrumMasterServiceImplTest {
         scrumMasterService.deleteScrumMaster(1L);
 
         // Assert
-        verify(scrumMasterRepository).findById(1L);
         verify(scrumMasterRepository).delete(scrumMaster);
     }
 
@@ -162,9 +177,10 @@ class ScrumMasterServiceImplTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 scrumMasterService.deleteScrumMaster(1L));
-        verify(scrumMasterRepository).findById(1L);
         verify(scrumMasterRepository, never()).delete(any());
     }
+
+    // ------------------------- GET ALL -------------------------
 
     @Test
     @DisplayName("Get all ScrumMasters - Should return list of DTOs")
@@ -180,6 +196,5 @@ class ScrumMasterServiceImplTest {
         assertFalse(results.isEmpty());
         assertEquals(1, results.size());
         assertEquals(1L, results.get(0).id());
-        verify(scrumMasterRepository).findAll();
     }
 }

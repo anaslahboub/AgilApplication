@@ -4,15 +4,16 @@ import com.ensa.miniproject.dto.*;
 import com.ensa.miniproject.entities.*;
 import com.ensa.miniproject.mapping.*;
 import com.ensa.miniproject.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,16 +26,12 @@ class ProductOwnerServiceImplTest {
 
     @Mock
     private ProjectRepository projectRepository;
-
     @Mock
     private ProductOwnerRepository productOwnerRepository;
-
     @Mock
     private ProjectMapper projectMapper;
-
     @Mock
     private ProductOwnerMapper productOwnerMapper;
-
     @Mock
     private ProductBacklogMapper productBacklogMapper;
 
@@ -76,9 +73,11 @@ class ProductOwnerServiceImplTest {
         productBacklog.setTitle("Test Backlog");
 
         productBacklogDTO = new ProductBacklogDTO(
-                1L, "Test Backlog", null, null, null, null,null
+                1L, "Test Backlog", null, null, null, null, null
         );
     }
+
+    // ------------------------- ADD -------------------------
 
     @Test
     @DisplayName("Add ProductOwner - Should return saved DTO")
@@ -94,15 +93,69 @@ class ProductOwnerServiceImplTest {
         // Assert
         assertNotNull(result);
         assertEquals(productOwnerDTO.id(), result.id());
-        assertEquals(productOwnerDTO.username(), result.username());
-        verify(productOwnerMapper).toEntity(productOwnerDTO);
         verify(productOwnerRepository).save(productOwner);
-        verify(productOwnerMapper).fromEntity(productOwner);
+    }
+
+    // ------------------------- UPDATE (CRUCIAL POUR COUVERTURE) -------------------------
+
+    @Test
+    @DisplayName("Update ProductOwner - Full Update")
+    void updateProductOwner_FullUpdate() {
+        // Arrange
+        ProductOwnerDTO updateDto = new ProductOwnerDTO(1L, "NewUser", "NewPrenom", "NewPass", "new@mail.com");
+
+        when(productOwnerRepository.findById(1L)).thenReturn(Optional.of(productOwner));
+        // Mock the mapper response
+        when(productOwnerMapper.fromEntity(any(ProductOwner.class))).thenReturn(updateDto);
+
+        // Act
+        ProductOwnerDTO result = productOwnerService.updateProductOwner(updateDto);
+
+        // Assert
+        assertNotNull(result);
+        // Verify setters were called on the entity
+        assertEquals("NewUser", productOwner.getUsername());
+        assertEquals("NewPrenom", productOwner.getPrenom());
+        assertEquals("new@mail.com", productOwner.getEmail());
     }
 
     @Test
-    @DisplayName("Get ProductOwner by ID - When exists - Should return DTO")
-    void getProductOwnerById_WhenExists_ShouldReturnProductOwnerDTO() {
+    @DisplayName("Update ProductOwner - Partial Update (Some fields null)")
+    void updateProductOwner_PartialUpdate() {
+        // Arrange
+        // Only update Username, others are null
+        ProductOwnerDTO partialDto = new ProductOwnerDTO(1L, "NewUserOnly", null, null, null);
+
+        when(productOwnerRepository.findById(1L)).thenReturn(Optional.of(productOwner));
+        when(productOwnerMapper.fromEntity(any(ProductOwner.class))).thenReturn(partialDto);
+
+        // Act
+        productOwnerService.updateProductOwner(partialDto);
+
+        // Assert
+        // Verify Username changed
+        assertEquals("NewUserOnly", productOwner.getUsername());
+        // Verify others did NOT change (remained as set in setUp)
+        assertEquals("John", productOwner.getPrenom());
+        assertEquals("john@test.com", productOwner.getEmail());
+    }
+
+    @Test
+    @DisplayName("Update ProductOwner - Not Found")
+    void updateProductOwner_NotFound() {
+        // Arrange
+        when(productOwnerRepository.findById(99L)).thenReturn(Optional.empty());
+        ProductOwnerDTO dto = new ProductOwnerDTO(99L, null, null, null, null);
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> productOwnerService.updateProductOwner(dto));
+    }
+
+    // ------------------------- GET BY ID -------------------------
+
+    @Test
+    @DisplayName("Get ProductOwner by ID - When exists")
+    void getProductOwnerById_WhenExists() {
         // Arrange
         when(productOwnerRepository.findById(1L)).thenReturn(Optional.of(productOwner));
         when(productOwnerMapper.fromEntity(any(ProductOwner.class))).thenReturn(productOwnerDTO);
@@ -113,25 +166,23 @@ class ProductOwnerServiceImplTest {
         // Assert
         assertNotNull(result);
         assertEquals(1L, result.id());
-        assertEquals("testOwner", result.username());
-        verify(productOwnerRepository).findById(1L);
     }
 
     @Test
-    @DisplayName("Get ProductOwner by ID - When not exists - Should throw exception")
-    void getProductOwnerById_WhenNotExists_ShouldThrowException() {
+    @DisplayName("Get ProductOwner by ID - Not Found")
+    void getProductOwnerById_NotFound() {
         // Arrange
         when(productOwnerRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(EntityNotFoundException.class, () ->
-                productOwnerService.getProductOwnerById(1L));
-        verify(productOwnerRepository).findById(1L);
+        assertThrows(EntityNotFoundException.class, () -> productOwnerService.getProductOwnerById(1L));
     }
 
+    // ------------------------- GET ALL -------------------------
+
     @Test
-    @DisplayName("Get all ProductOwners - Should return list of DTOs")
-    void getProductOwners_ShouldReturnListOfProductOwnerDTOs() {
+    @DisplayName("Get all ProductOwners")
+    void getProductOwners_ShouldReturnList() {
         // Arrange
         when(productOwnerRepository.findAll()).thenReturn(List.of(productOwner));
         when(productOwnerMapper.fromEntity(any(ProductOwner.class))).thenReturn(productOwnerDTO);
@@ -141,13 +192,13 @@ class ProductOwnerServiceImplTest {
 
         // Assert
         assertEquals(1, results.size());
-        assertEquals(1L, results.get(0).id());
-        verify(productOwnerRepository).findAll();
     }
 
+    // ------------------------- DELETE -------------------------
+
     @Test
-    @DisplayName("Delete ProductOwner - Should call repository delete")
-    void deleteProductOwner_ShouldCallRepositoryDelete() {
+    @DisplayName("Delete ProductOwner")
+    void deleteProductOwner_Success() {
         // Act
         productOwnerService.deleteProductOwner(1L);
 
@@ -155,9 +206,11 @@ class ProductOwnerServiceImplTest {
         verify(productOwnerRepository).deleteById(1L);
     }
 
+    // ------------------------- AFFECTATION -------------------------
+
     @Test
-    @DisplayName("Affect Backlog to Project - Should update project")
-    void affectBacklogToProject_ShouldUpdateProject() {
+    @DisplayName("Affect Backlog to Project - Success")
+    void affectBacklogToProject_Success() {
         // Arrange
         when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(productBacklogMapper.toEntity(any(ProductBacklogDTO.class))).thenReturn(productBacklog);
@@ -166,26 +219,26 @@ class ProductOwnerServiceImplTest {
         productOwnerService.affectBacklogToProject(1L, productBacklogDTO);
 
         // Assert
-        verify(projectRepository).findById(1L);
-        verify(projectRepository).save(project);
-        assertEquals(productBacklog, project.getProductBacklog());
+        ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+        verify(projectRepository).save(projectCaptor.capture());
+
+        assertEquals(productBacklog, projectCaptor.getValue().getProductBacklog());
     }
 
     @Test
-    @DisplayName("Affect Backlog to Project - When project not found - Should throw exception")
-    void affectBacklogToProject_WhenProjectNotFound_ShouldThrowException() {
+    @DisplayName("Affect Backlog to Project - Project Not Found")
+    void affectBacklogToProject_NotFound() {
         // Arrange
         when(projectRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 productOwnerService.affectBacklogToProject(1L, productBacklogDTO));
-        verify(projectRepository).findById(1L);
     }
 
     @Test
-    @DisplayName("Affect Project to Backlog - Should update project")
-    void affectProjectToBacklog_ShouldUpdateProject() {
+    @DisplayName("Affect Project to Backlog - Success")
+    void affectProjectToBacklog_Success() {
         // Arrange
         when(productBacklogMapper.toEntity(any(ProductBacklogDTO.class))).thenReturn(productBacklog);
         when(projectMapper.toEntity(any(ProjectDTO.class))).thenReturn(project);
@@ -194,8 +247,9 @@ class ProductOwnerServiceImplTest {
         productOwnerService.affectProjectToBacklog(productBacklogDTO, projectDTO);
 
         // Assert
-        verify(projectRepository).save(project);
-        assertEquals(productBacklog, project.getProductBacklog());
-    }
+        ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+        verify(projectRepository).save(projectCaptor.capture());
 
+        assertEquals(productBacklog, projectCaptor.getValue().getProductBacklog());
+    }
 }

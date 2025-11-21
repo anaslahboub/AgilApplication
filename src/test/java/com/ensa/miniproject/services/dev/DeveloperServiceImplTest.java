@@ -10,12 +10,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -38,7 +42,7 @@ class DeveloperServiceImplTest {
     private EquipeDevelopement equipe;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         // Setup Developer Entity
         developer = new Developer();
         developer.setId(1L);
@@ -101,7 +105,20 @@ class DeveloperServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(developerDto.getId(), result.get(0).getId());
-        verify(developerRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("Test get all developers - Empty List")
+    void getAllDevelopersEmptyTest() {
+        // Arrange
+        when(developerRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        List<DeveloperDto> result = developerServiceImpl.getAllDevelopers();
+
+        // Assert
+        assertTrue(result.isEmpty());
+        verify(developerMapper, never()).fromEntity(any());
     }
 
     // ------------------------- GET BY ID -------------------------
@@ -137,29 +154,34 @@ class DeveloperServiceImplTest {
     // ------------------------- UPDATE -------------------------
 
     @Test
-    @DisplayName("Test update developer - Success")
+    @DisplayName("Test update developer - Success with Captor")
     void updateDeveloperSuccessTest() {
         // Arrange
         DeveloperDto updateDto = DeveloperDto.builder()
                 .username("updated_name")
                 .prenom("updated_prenom")
                 .email("updated@mail.com")
+                .speciality("PYTHON")
                 .build();
 
         when(developerRepository.findById(1L)).thenReturn(Optional.of(developer));
-        when(developerRepository.save(developer)).thenReturn(developer);
-        when(developerMapper.fromEntity(developer)).thenReturn(updateDto); // Return the updated DTO simulation
+        when(developerRepository.save(any(Developer.class))).thenReturn(developer);
+        when(developerMapper.fromEntity(any(Developer.class))).thenReturn(updateDto);
 
         // Act
         DeveloperDto result = developerServiceImpl.updateDeveloper(1L, updateDto);
 
         // Assert
         assertNotNull(result);
-        assertEquals("updated_name", result.getUsername());
 
-        // Verify that setters were called on the entity
-        assertEquals("updated_name", developer.getUsername());
-        verify(developerRepository).save(developer);
+        // Utilisation de ArgumentCaptor pour vérifier les setters
+        ArgumentCaptor<Developer> devCaptor = ArgumentCaptor.forClass(Developer.class);
+        verify(developerRepository).save(devCaptor.capture());
+
+        Developer capturedDev = devCaptor.getValue();
+        assertEquals("updated_name", capturedDev.getUsername());
+        assertEquals("updated_prenom", capturedDev.getPrenom());
+        assertEquals("PYTHON", capturedDev.getSpeciality());
     }
 
     @Test
@@ -173,7 +195,8 @@ class DeveloperServiceImplTest {
             developerServiceImpl.updateDeveloper(99L, developerDto);
         });
 
-        assertEquals("Developer not found", exception.getMessage());
+        // Vérifie que le message correspond à ta constante DEVELOPER_NOT_FOUND
+        assertTrue(exception.getMessage().contains("Developer not found"));
         verify(developerRepository, never()).save(any());
     }
 
@@ -207,6 +230,20 @@ class DeveloperServiceImplTest {
         assertEquals("JAVA", result.get(0).getSpeciality());
     }
 
+    @Test
+    @DisplayName("Test find developers by speciality - None Found")
+    void findDevelopersBySpecialityEmptyTest() {
+        // Arrange
+        String speciality = "COBOL";
+        when(developerRepository.findBySpecialityIgnoreCase(speciality)).thenReturn(Collections.emptyList());
+
+        // Act
+        List<DeveloperDto> result = developerServiceImpl.findDevelopersBySpeciality(speciality);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
     // ------------------------- ASSIGN TO EQUIPE -------------------------
 
     @Test
@@ -218,19 +255,23 @@ class DeveloperServiceImplTest {
 
         when(developerRepository.findById(devId)).thenReturn(Optional.of(developer));
         when(equipeRepository.findById(equipeId)).thenReturn(Optional.of(equipe));
-        when(developerRepository.save(developer)).thenReturn(developer);
-        when(developerMapper.fromEntity(developer)).thenReturn(developerDto);
+        when(developerRepository.save(any(Developer.class))).thenReturn(developer);
+        when(developerMapper.fromEntity(any(Developer.class))).thenReturn(developerDto);
 
         // Act
-        DeveloperDto result = developerServiceImpl.assignToEquipe(devId, equipeId);
+        developerServiceImpl.assignToEquipe(devId, equipeId);
 
         // Assert
-        assertNotNull(result);
-        // Verify relationship was established in memory
-        assertEquals(equipe, developer.getEquipe());
-        assertTrue(equipe.getDevelopers().contains(developer));
+        // Vérification cruciale : est-ce que le développeur a bien reçu l'équipe AVANT la sauvegarde ?
+        ArgumentCaptor<Developer> devCaptor = ArgumentCaptor.forClass(Developer.class);
+        verify(developerRepository).save(devCaptor.capture());
 
-        verify(developerRepository).save(developer);
+        Developer savedDev = devCaptor.getValue();
+        assertNotNull(savedDev.getEquipe());
+        assertEquals(100L, savedDev.getEquipe().getId());
+
+        // Vérification que le dev est ajouté à la liste de l'équipe (opération en mémoire)
+        assertTrue(equipe.getDevelopers().contains(developer));
     }
 
     @Test
@@ -243,7 +284,7 @@ class DeveloperServiceImplTest {
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
                 developerServiceImpl.assignToEquipe(99L, 100L)
         );
-        assertEquals("Developer not found", ex.getMessage());
+        assertTrue(ex.getMessage().contains("Developer not found"));
     }
 
     @Test

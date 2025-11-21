@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -21,7 +22,6 @@ public class EquipeDevelopementServiceImpl implements EquipeDevelopementService 
     private final EquipeDevelopementRepository equipeRepository;
     private final DeveloperRepository developerRepository;
     private final EquipeDevelopementMapper equipeDevelopementMapper;
-    private static  final String EQUIPE_DEVELOPMENT_NOT_FOUND = "Equipe not found with id: ";
 
     @Override
     public EquipeDevelopementDTO createEquipe(EquipeDevelopementDTO equipeDevelopementDTO) {

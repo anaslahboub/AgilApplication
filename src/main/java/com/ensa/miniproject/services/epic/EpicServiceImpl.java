@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -22,7 +22,6 @@ public class EpicServiceImpl implements EpicService{
     private final EpicRepository epicRepository;
     private final EpicMapper epicMapper;
     private final UserStoryRepository userStoryRepository;
-    public static final String EPIC_NOT_FOUND = "epic not found with id: ";
 
     @Override
     public EpicDTO createEpic(EpicDTO epicDTO) {

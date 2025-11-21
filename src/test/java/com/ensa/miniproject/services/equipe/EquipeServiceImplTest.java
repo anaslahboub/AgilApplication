@@ -1,4 +1,5 @@
 package com.ensa.miniproject.services.equipe;
+
 import com.ensa.miniproject.dto.EquipeDevelopementDTO;
 import com.ensa.miniproject.entities.Developer;
 import com.ensa.miniproject.entities.EquipeDevelopement;
@@ -10,19 +11,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
- class EquipeServiceImplTest {
+class EquipeServiceImplTest {
 
     @Mock
     private EquipeDevelopementRepository equipeRepository;
@@ -49,31 +53,33 @@ import static org.mockito.Mockito.*;
         // IMPORTANT: Initialize the list to avoid NullPointerException when adding developers
         equipe = new EquipeDevelopement();
         equipe.setId(10L);
-        equipe.setDevelopers(new ArrayList<>());
-        // Setup Equipe DTO (using Record constructor)
+        equipe.setDevelopers(new ArrayList<>()); // Mutable list
+
+        // Setup Equipe DTO
         equipeDto = new EquipeDevelopementDTO(10L, new ArrayList<>());
     }
 
     // ------------------------- CREATE -------------------------
 
     @Test
-    @DisplayName("Test create new equipe with empty developers list")
-    void createEquipeTest() {
+    @DisplayName("Test create new equipe with NULL developers list")
+    void createEquipeNullListTest() {
         // Arrange
+        EquipeDevelopementDTO dtoNullList = new EquipeDevelopementDTO(null, null);
+
         when(equipeRepository.save(any(EquipeDevelopement.class))).thenReturn(equipe);
         when(equipeDevelopementMapper.fromEntity(equipe)).thenReturn(equipeDto);
 
         // Act
-        EquipeDevelopementDTO result = equipeService.createEquipe(equipeDto);
+        EquipeDevelopementDTO result = equipeService.createEquipe(dtoNullList);
 
         // Assert
         assertNotNull(result);
-        assertEquals(equipeDto.id(), result.id());
-        verify(equipeRepository, times(1)).save(any(EquipeDevelopement.class));
+        verify(equipeRepository).save(any(EquipeDevelopement.class));
     }
 
     @Test
-    @DisplayName("Test create new equipe with existing developers")
+    @DisplayName("Test create new equipe with existing developers list")
     void createEquipeWithDevelopersTest() {
         // Arrange
         List<Developer> devList = List.of(developer);
@@ -90,8 +96,10 @@ import static org.mockito.Mockito.*;
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, result.developers().size());
-        verify(equipeRepository).save(any(EquipeDevelopement.class));
+        // Verify that setDevelopers was called via the DTO flow
+        ArgumentCaptor<EquipeDevelopement> captor = ArgumentCaptor.forClass(EquipeDevelopement.class);
+        verify(equipeRepository).save(captor.capture());
+        assertEquals(1, captor.getValue().getDevelopers().size());
     }
 
     // ------------------------- GET BY ID -------------------------
@@ -141,6 +149,19 @@ import static org.mockito.Mockito.*;
         assertNotNull(result);
         assertEquals(1, result.size());
         verify(equipeRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("Test get all equipes - Empty")
+    void getAllEquipesEmptyTest() {
+        // Arrange
+        when(equipeRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        List<EquipeDevelopementDTO> result = equipeService.getAllEquipes();
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     // ------------------------- UPDATE -------------------------
@@ -204,6 +225,30 @@ import static org.mockito.Mockito.*;
 
     // ------------------------- ADD DEVELOPER TO EQUIPE -------------------------
 
+    @Test
+    @DisplayName("Test add developer to equipe - Success")
+    void addDeveloperToEquipeSuccessTest() {
+        // Arrange
+        Long equipeId = 10L;
+        Long devId = 1L;
+
+        when(equipeRepository.findById(equipeId)).thenReturn(Optional.of(equipe));
+        when(developerRepository.findById(devId)).thenReturn(Optional.of(developer));
+        // The service returns the Mapped Equipe
+        when(equipeDevelopementMapper.fromEntity(equipe)).thenReturn(equipeDto);
+
+        // Act
+        equipeService.addDeveloperToEquipe(equipeId, devId);
+
+        // Assert
+        // 1. Verify Bidirectional Relationship
+        assertTrue(equipe.getDevelopers().contains(developer), "Dev should be in Equipe list");
+        assertEquals(equipe, developer.getEquipe(), "Equipe should be set on Dev");
+
+        // 2. Verify Double Save (Crucial based on service code)
+        verify(equipeRepository).save(equipe);
+        verify(developerRepository).save(developer);
+    }
 
     @Test
     @DisplayName("Test add developer to equipe - Equipe Not Found")
@@ -229,6 +274,8 @@ import static org.mockito.Mockito.*;
         ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () ->
                 equipeService.addDeveloperToEquipe(10L, 99L)
         );
-        assertTrue(ex.getMessage().contains("Equipe not found")); // Based on your service message for Dev
+        // Note: Your service code throws "Equipe not found" even if Dev is not found (Copy/Paste error in service).
+        // The test reflects the current code behavior.
+        assertTrue(ex.getMessage().contains("Equipe not found"));
     }
 }

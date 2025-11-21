@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -20,7 +21,6 @@ public class SprintBacklogServiceImpl implements SprintBacklogService {
     private final EpicRepository epicRepository;
     private final UserStoryRepository userStoryRepository;
     private final SprintBacklogMapper sprintBacklogMapper;
-    private static final String SPRINT_BACKLOG = "sprintbacklog";
 
     @Override
     @Transactional
@@ -66,6 +66,8 @@ public class SprintBacklogServiceImpl implements SprintBacklogService {
                 .map(sprintBacklogMapper::fromEntity)
                 .toList();
     }
+
+
 
     @Override
     @Transactional

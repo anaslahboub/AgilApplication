@@ -1,7 +1,6 @@
 package com.ensa.miniproject.services.scrummaster;
 
 import com.ensa.miniproject.dto.ScrumMasterDTO;
-
 import java.util.List;
 
 public interface ScrumMasterService {

@@ -12,15 +12,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +55,7 @@ class EpicServiceImplTest {
         epic.setId(1L);
         epic.setTitle("Epic Title");
         epic.setDescription("Epic Description");
-        // IMPORTANT: Initialize list as ArrayList to allow modifications (add/remove)
+        // IMPORTANT: Initialize list as ArrayList to allow modifications
         epic.setUserStories(new ArrayList<>());
 
         // Setup Epic DTO
@@ -114,18 +117,33 @@ class EpicServiceImplTest {
         EpicDTO updateDto = new EpicDTO(1L, "New Title", "New Desc", null);
 
         when(epicRepository.findById(1L)).thenReturn(Optional.of(epic));
-        when(epicRepository.save(epic)).thenReturn(epic);
-        when(epicMapper.fromEntity(epic)).thenReturn(updateDto);
+        when(epicRepository.save(any(Epic.class))).thenReturn(epic);
+        when(epicMapper.fromEntity(any(Epic.class))).thenReturn(updateDto);
 
         // Act
         EpicDTO result = epicService.updateEpic(updateDto);
 
         // Assert
         assertNotNull(result);
-        assertEquals("New Title", result.title());
-        // Verify internal state change
-        assertEquals("New Title", epic.getTitle());
-        verify(epicRepository).save(epic);
+
+        // Use ArgumentCaptor to verify setters
+        ArgumentCaptor<Epic> epicCaptor = ArgumentCaptor.forClass(Epic.class);
+        verify(epicRepository).save(epicCaptor.capture());
+
+        assertEquals("New Title", epicCaptor.getValue().getTitle());
+        assertEquals("New Desc", epicCaptor.getValue().getDescription());
+    }
+
+    @Test
+    @DisplayName("Test update Epic - Not Found")
+    void updateEpicNotFoundTest() {
+        // Arrange
+        when(epicRepository.findById(1L)).thenReturn(Optional.empty());
+        EpicDTO updateDto = new EpicDTO(1L, "Title", "Desc", null);
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> epicService.updateEpic(updateDto));
+        verify(epicRepository, never()).save(any());
     }
 
     @Test
@@ -151,21 +169,78 @@ class EpicServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> epicService.deleteEpic(99L));
     }
 
+    @Test
+    @DisplayName("Test get all Epics")
+    void getEpicsTest() {
+        // Arrange
+        when(epicRepository.findAll()).thenReturn(List.of(epic));
+        when(epicMapper.fromEntity(epic)).thenReturn(epicDTO);
+
+        // Act
+        List<EpicDTO> result = epicService.getEpics();
+
+        // Assert
+        assertEquals(1, result.size());
+        verify(epicRepository).findAll();
+    }
+
     // ------------------------- AFFECT USER STORIES -------------------------
 
+    @Test
+    @DisplayName("Affect UserStories - Success")
+    void affectUserStoriesToEpicSuccessTest() {
+        // Arrange
+        List<Long> ids = List.of(100L);
+        List<UserStory> stories = List.of(userStory);
+
+        // Note: Service calls findById twice. Once at start, once at end.
+        when(epicRepository.findById(1L)).thenReturn(Optional.of(epic));
+        when(userStoryRepository.findAllById(ids)).thenReturn(stories);
+        when(epicMapper.fromEntity(epic)).thenReturn(epicDTO);
+
+        // Act
+        epicService.affectUserStoriesToEpic(1L, ids);
+
+        // Assert
+        assertTrue(epic.getUserStories().contains(userStory));
+        verify(userStoryRepository).saveAll(stories);
+    }
 
     @Test
     @DisplayName("Affect UserStories - Epic Not Found")
     void affectUserStoriesEpicNotFoundTest() {
         // Arrange
         when(epicRepository.findById(99L)).thenReturn(Optional.empty());
+        List<Long> ids = List.of(1L);
 
         // Act & Assert
         ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () ->
-                epicService.affectUserStoriesToEpic(99L, List.of(1L))
+                epicService.affectUserStoriesToEpic(99L, ids)
         );
         assertTrue(ex.getMessage().contains("epic"));
     }
+
+    @Test
+    @DisplayName("Affect UserStories - Mismatch (One or more IDs not found)")
+    void affectUserStoriesMismatchTest() {
+        // Arrange
+        when(epicRepository.findById(1L)).thenReturn(Optional.of(epic));
+
+        // We ask for 2 IDs, but repository returns only 1 story
+        List<Long> ids = List.of(100L, 200L);
+        List<UserStory> foundStories = List.of(userStory);
+
+        when(userStoryRepository.findAllById(ids)).thenReturn(foundStories);
+
+        // Act & Assert
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () ->
+                epicService.affectUserStoriesToEpic(1L, ids)
+        );
+        // Check the generic message from your service
+        assertTrue(ex.getMessage().contains("UserStories not found"));
+        verify(userStoryRepository, never()).saveAll(any());
+    }
+
     // ------------------------- REMOVE USER STORY -------------------------
 
     @Test
@@ -183,7 +258,7 @@ class EpicServiceImplTest {
         epicService.removeUserStoryFromEpic(1L, 100L);
 
         // Assert
-        // Verify the list is empty now
+        // Verify the list is empty now (reference check)
         assertTrue(epic.getUserStories().isEmpty());
         verify(userStoryRepository).save(userStory);
     }

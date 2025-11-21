@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @AllArgsConstructor
 @Service
@@ -21,7 +21,6 @@ public class UserStoryCloneServiceImpl implements UserStoryCloneService {
     private final UserStoryCloneRepository userStoryCloneRepository;
     private final UserStoryRepository userStoryRepository;
     private final UserStoryCloneMapper userStoryCloneMapper;
-    private static final String USER_STORY_CLONE_NOT_FOUND ="userstoryclone not found with id: ";
 
     @Override
     @Transactional

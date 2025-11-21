@@ -96,7 +96,6 @@ public class ProductBacklogServiceImpl implements ProductBacklogService {
                     .collect(Collectors.joining(", "));
             throw new ResourceNotFoundException("Missing epic IDs: " + missingIds);
         }
-
         // Add to product backlog and save
         epics.forEach(epic -> productBacklog.getEpics().add(epic));
         epicRepository.saveAll(epics);
@@ -109,15 +108,10 @@ public class ProductBacklogServiceImpl implements ProductBacklogService {
     public ProductBacklogDTO removeEpicFromProductBacklog(Long productBacklogId, Long epicId) {
         ProductBacklog productBacklog = productBacklogRepository.findById(productBacklogId)
                 .orElseThrow(() -> new ResourceNotFoundException("ProductBacklog", "id", productBacklogId));
-
         Epic epic = epicRepository.findById(epicId)
                 .orElseThrow(() -> new ResourceNotFoundException("epic", "id", epicId));
-
-
-
         productBacklog.getEpics().remove(epic);
         epicRepository.save(epic);
-
         return productBacklogMapper.fromEntity(productBacklog);
     }
 }

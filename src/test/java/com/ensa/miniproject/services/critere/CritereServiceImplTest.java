@@ -9,17 +9,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
- class CritereServiceImplTest {
+class CritereServiceImplTest {
 
     @Mock
     private CritereRepository critereRepository;
@@ -58,7 +62,7 @@ import static org.mockito.Mockito.*;
     // ------------------------- CREATE -------------------------
 
     @Test
-    @DisplayName("Test create critere")
+    @DisplayName("Test create critere - Success")
     void createCritereTest() {
         // Arrange
         when(critereMapper.toEntity(critereDTO)).thenReturn(critere);
@@ -71,6 +75,9 @@ import static org.mockito.Mockito.*;
         // Assert
         assertNotNull(result);
         assertEquals(critereDTO.Scenario(), result.Scenario());
+
+        // Vérifie que le mapper et le repository ont bien été appelés
+        verify(critereMapper).toEntity(critereDTO);
         verify(critereRepository).save(critere);
     }
 
@@ -89,6 +96,7 @@ import static org.mockito.Mockito.*;
         // Assert
         assertNotNull(result);
         assertEquals(1L, result.id());
+        verify(critereRepository).findById(1L);
     }
 
     @Test
@@ -102,13 +110,15 @@ import static org.mockito.Mockito.*;
             critereService.getCritereById(99L);
         });
 
+        // Vérification partielle du message d'erreur (bonne pratique pour éviter les erreurs sur les ID dynamiques)
         assertTrue(exception.getMessage().contains("Critere not found"));
+        verify(critereMapper, never()).fromEntity(any());
     }
 
     // ------------------------- UPDATE -------------------------
 
     @Test
-    @DisplayName("Test update critere - Success")
+    @DisplayName("Test update critere - Success with Verification")
     void updateCritereSuccessTest() {
         // Arrange
         CritereDTO updateDto = new CritereDTO(
@@ -121,21 +131,26 @@ import static org.mockito.Mockito.*;
         );
 
         when(critereRepository.findById(1L)).thenReturn(Optional.of(critere));
-        when(critereRepository.save(critere)).thenReturn(critere);
-        when(critereMapper.fromEntity(critere)).thenReturn(updateDto);
+        // On retourne l'objet modifié pour simuler le save
+        when(critereRepository.save(any(Critere.class))).thenReturn(critere);
+        when(critereMapper.fromEntity(any(Critere.class))).thenReturn(updateDto);
 
         // Act
         CritereDTO result = critereService.updateCritere(updateDto);
 
         // Assert
         assertNotNull(result);
-        assertEquals("Updated Scenario", result.Scenario());
 
-        // Verify that the entity was actually updated in memory before saving
-        assertEquals("Updated Scenario", critere.getScenario());
-        assertEquals("Updated Given", critere.getGiven());
+        // --- UTILISATION DE ARGUMENT CAPTOR (Meilleure pratique) ---
+        // Cela permet de vérifier que les setters ont bien été appelés avec les valeurs du DTO
+        // avant l'appel au repository.
+        ArgumentCaptor<Critere> critereCaptor = ArgumentCaptor.forClass(Critere.class);
+        verify(critereRepository).save(critereCaptor.capture());
 
-        verify(critereRepository).save(critere);
+        Critere capturedCritere = critereCaptor.getValue();
+        assertEquals("Updated Scenario", capturedCritere.getScenario());
+        assertEquals("Updated When", capturedCritere.getWhenn());
+        assertEquals("Updated Given", capturedCritere.getGiven());
     }
 
     @Test
@@ -184,7 +199,7 @@ import static org.mockito.Mockito.*;
     // ------------------------- GET ALL -------------------------
 
     @Test
-    @DisplayName("Test get all criteres")
+    @DisplayName("Test get all criteres - Returns List")
     void getAllCriteresTest() {
         // Arrange
         when(critereRepository.findAll()).thenReturn(List.of(critere));
@@ -198,5 +213,21 @@ import static org.mockito.Mockito.*;
         assertEquals(1, result.size());
         assertEquals(critereDTO.Scenario(), result.get(0).Scenario());
         verify(critereRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("Test get all criteres - Returns Empty List")
+    void getAllCriteresEmptyTest() {
+        // Arrange
+        when(critereRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        List<CritereDTO> result = critereService.getAllCriteres();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(critereRepository).findAll();
+        verify(critereMapper, never()).fromEntity(any());
     }
 }

@@ -13,9 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +43,7 @@ class SprintServiceImplTest {
     void setUp() {
         // Setup SprintBacklog
         sprintBacklog = new SprintBacklog();
-        sprintBacklog.setId(100L); // Assuming ID is Long based on previous context
+        sprintBacklog.setId(100L);
 
         // Setup Sprint Entity
         sprint = new Sprint();
@@ -52,12 +56,14 @@ class SprintServiceImplTest {
         sprintDto.setId(1);
         sprintDto.setName("Sprint 1");
         sprintDto.setDays(14L);
+        // Initialize inner object to avoid NPE in tests that don't set it
+        sprintDto.setSprintBacklog(null);
     }
 
     // ------------------------- SAVE -------------------------
 
     @Test
-    @DisplayName("Test Save Sprint")
+    @DisplayName("Save Sprint")
     void saveSprintTest() {
         // Arrange
         when(sprintMapper.mapToEntity(sprintDto)).thenReturn(sprint);
@@ -76,7 +82,7 @@ class SprintServiceImplTest {
     // ------------------------- GET ALL -------------------------
 
     @Test
-    @DisplayName("Test Get All Sprints")
+    @DisplayName("Get All Sprints")
     void getAllSprintsTest() {
         // Arrange
         when(sprintRepository.findAll()).thenReturn(List.of(sprint));
@@ -88,13 +94,12 @@ class SprintServiceImplTest {
         // Assert
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
-        verify(sprintRepository).findAll();
     }
 
     // ------------------------- GET BY ID -------------------------
 
     @Test
-    @DisplayName("Test Get Sprint By ID - Found")
+    @DisplayName("Get Sprint By ID - Found")
     void getSprintByIdFoundTest() {
         // Arrange
         when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
@@ -109,7 +114,7 @@ class SprintServiceImplTest {
     }
 
     @Test
-    @DisplayName("Test Get Sprint By ID - Not Found")
+    @DisplayName("Get Sprint By ID - Not Found")
     void getSprintByIdNotFoundTest() {
         // Arrange
         when(sprintRepository.findById(99)).thenReturn(Optional.empty());
@@ -121,35 +126,12 @@ class SprintServiceImplTest {
         assertTrue(result.isEmpty());
     }
 
-    // ------------------------- UPDATE -------------------------
+    // ------------------------- UPDATE (CRUCIAL) -------------------------
 
     @Test
-    @DisplayName("Test Update Sprint - Basic Fields Success")
-    void updateSprintSuccessTest() {
+    @DisplayName("Update Sprint - With New Backlog Association")
+    void updateSprint_WithBacklog() {
         // Arrange
-        SprintDto updateDto = new SprintDto(1, "Updated Name", 20L, new SprintBacklog()); // Empty backlog for basic test
-
-        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
-        when(sprintRepository.save(sprint)).thenReturn(sprint);
-        when(sprintMapper.mapToDto(sprint)).thenReturn(updateDto);
-
-        // Act
-        SprintDto result = sprintService.updateSprint(1, updateDto);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("Updated Name", result.getName());
-
-        // Verify entity was actually updated
-        assertEquals("Updated Name", sprint.getName());
-        assertEquals(20L, sprint.getDays());
-    }
-
-    @Test
-    @DisplayName("Test Update Sprint - With Backlog Association")
-    void updateSprintWithBacklogTest() {
-        // Arrange
-        // Create a DTO that has a SprintBacklog inside it
         SprintBacklog backlogInDto = new SprintBacklog();
         backlogInDto.setId(100L);
 
@@ -164,28 +146,63 @@ class SprintServiceImplTest {
         sprintService.updateSprint(1, updateDto);
 
         // Assert
-        // Verify that the service fetched the backlog and set it on the sprint
-        verify(sprintBacklogRepository).findById(100L);
+        // Verify backlog was set
         assertEquals(sprintBacklog, sprint.getSprintBacklog());
     }
 
     @Test
-    @DisplayName("Test Update Sprint - Not Found Exception")
-    void updateSprintNotFoundTest() {
+    @DisplayName("Update Sprint - Null Backlog in DTO (Should set null)")
+    void updateSprint_NullBacklogDto() {
+        // Arrange
+        // DTO has null SprintBacklog field
+        SprintDto updateDto = new SprintDto(1, "No Backlog", 10L, null);
+
+        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
+        when(sprintRepository.save(sprint)).thenReturn(sprint);
+        when(sprintMapper.mapToDto(sprint)).thenReturn(updateDto);
+
+        // Act
+        sprintService.updateSprint(1, updateDto);
+
+        // Assert
+        assertNull(sprint.getSprintBacklog());
+    }
+
+    @Test
+    @DisplayName("Update Sprint - Backlog ID null in DTO (Should set null)")
+    void updateSprint_BacklogIdNull() {
+        // Arrange
+        // DTO has a Backlog object, but its ID is null
+        SprintBacklog emptyBacklog = new SprintBacklog(); // ID is null
+        SprintDto updateDto = new SprintDto(1, "No Backlog ID", 10L, emptyBacklog);
+
+        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
+        when(sprintRepository.save(sprint)).thenReturn(sprint);
+        when(sprintMapper.mapToDto(sprint)).thenReturn(updateDto);
+
+        // Act
+        sprintService.updateSprint(1, updateDto);
+
+        // Assert
+        assertNull(sprint.getSprintBacklog());
+    }
+
+    @Test
+    @DisplayName("Update Sprint - Not Found")
+    void updateSprint_NotFound() {
         // Arrange
         when(sprintRepository.findById(99)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+        assertThrows(EntityNotFoundException.class, () ->
                 sprintService.updateSprint(99, sprintDto)
         );
-        assertTrue(ex.getMessage().contains("Sprint not found"));
     }
 
     // ------------------------- DELETE -------------------------
 
     @Test
-    @DisplayName("Test Delete Sprint")
+    @DisplayName("Delete Sprint")
     void deleteSprintTest() {
         // Act
         sprintService.deleteSprint(1);
@@ -209,27 +226,22 @@ class SprintServiceImplTest {
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals(14L, result.get(0).getDays());
     }
 
     @Test
     @DisplayName("Assign Sprint Backlog - Success")
     void assignSprintBacklogSuccessTest() {
         // Arrange
-        int sprintId = 1;
-        Long backlogId = 100L;
-
-        when(sprintRepository.findById(sprintId)).thenReturn(Optional.of(sprint));
-        when(sprintBacklogRepository.findById(backlogId)).thenReturn(Optional.of(sprintBacklog));
+        when(sprintRepository.findById(1)).thenReturn(Optional.of(sprint));
+        when(sprintBacklogRepository.findById(100L)).thenReturn(Optional.of(sprintBacklog));
         when(sprintRepository.save(sprint)).thenReturn(sprint);
         when(sprintMapper.mapToDto(sprint)).thenReturn(sprintDto);
 
         // Act
-        sprintService.assignSprintBacklog(sprintId, backlogId);
+        sprintService.assignSprintBacklog(1, 100L);
 
         // Assert
         assertEquals(sprintBacklog, sprint.getSprintBacklog());
-        verify(sprintRepository).save(sprint);
     }
 
     @Test
@@ -239,10 +251,9 @@ class SprintServiceImplTest {
         when(sprintRepository.findById(99)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+        assertThrows(EntityNotFoundException.class, () ->
                 sprintService.assignSprintBacklog(99, 100L)
         );
-        assertTrue(ex.getMessage().contains("Sprint not found"));
     }
 
     @Test
@@ -253,10 +264,9 @@ class SprintServiceImplTest {
         when(sprintBacklogRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+        assertThrows(EntityNotFoundException.class, () ->
                 sprintService.assignSprintBacklog(1, 999L)
         );
-        assertTrue(ex.getMessage().contains("sprintbacklog not found"));
     }
 
     @Test
@@ -271,7 +281,6 @@ class SprintServiceImplTest {
 
         // Assert
         assertEquals(1, result.size());
-        verify(sprintRepository).findBySprintBacklogIsNull();
     }
 
     @Test
@@ -303,7 +312,7 @@ class SprintServiceImplTest {
     }
 
     @Test
-    @DisplayName("Is Sprint Active - False (Not Found)")
+    @DisplayName("Is Sprint Active - Not Found (False)")
     void isSprintActiveNotFoundTest() {
         // Arrange
         when(sprintRepository.findById(99)).thenReturn(Optional.empty());

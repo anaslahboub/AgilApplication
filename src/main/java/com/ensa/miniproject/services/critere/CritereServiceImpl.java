@@ -7,9 +7,9 @@ import com.ensa.miniproject.repository.CritereRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @AllArgsConstructor
 @Service
@@ -17,7 +17,6 @@ public class CritereServiceImpl implements CritereService {
 
     private final CritereRepository critereRepository;
     private final CritereMapper critereMapper;
-    private static final String CRITERE_NOT_FOUND = "Critere not found with id: ";
 
     @Override
     public CritereDTO createCritere(CritereDTO critereDTO) {

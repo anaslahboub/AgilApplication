@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @Service
 public class ScrumMasterServiceImpl implements ScrumMasterService {
     private final ScrumMasterRepository scrumMasterRepository;
     private final ScrumMasterMapper scrumMasterMapper;
 
-    private static final String SCRUM_MASTER_NOT_FOUND = "No scrummaster found with id: ";
 
     @Autowired
     public ScrumMasterServiceImpl(ScrumMasterRepository scrumMasterRepository,

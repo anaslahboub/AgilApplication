@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import static com.ensa.miniproject.execptions.ErrorMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -20,8 +20,6 @@ public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
     private final SprintBacklogRepository sprintBacklogRepository;
-    private static final String SPRING_NOT_FOUND = "Sprint not found with ID: ";
-
     private final SprintMapper sprintMapper;
     @Override
     public SprintDto saveSprint(SprintDto sprintDto) {
@@ -50,17 +48,19 @@ public class SprintServiceImpl implements SprintService {
             sprint.setName(sprintDto.getName());
             sprint.setDays(sprintDto.getDays());
 
-            if (sprintDto.getSprintBacklog().getId() != null) {
+            // CORRECTION ICI : On vérifie d'abord si getSprintBacklog() n'est pas null
+            if (sprintDto.getSprintBacklog() != null && sprintDto.getSprintBacklog().getId() != null) {
                 SprintBacklog backlog = sprintBacklogRepository.findById(sprintDto.getSprintBacklog().getId())
                         .orElse(null);
                 sprint.setSprintBacklog(backlog);
             } else {
+                // Si le backlog est null OU si l'ID est null, on détache le backlog
                 sprint.setSprintBacklog(null);
             }
 
             return sprintMapper.mapToDto(sprintRepository.save(sprint));
         } else {
-            throw new RuntimeException(SPRING_NOT_FOUND + id);
+            throw new EntityNotFoundException(SPRINT_NOT_FOUND + id);
         }
     }
 
@@ -80,7 +80,7 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public SprintDto assignSprintBacklog(int sprintId, Long backlogId) {
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new EntityNotFoundException(SPRING_NOT_FOUND +sprintId ));
+                .orElseThrow(() -> new EntityNotFoundException(SPRINT_NOT_FOUND +sprintId ));
         SprintBacklog backlog = sprintBacklogRepository.findById(backlogId)
                 .orElseThrow(() -> new EntityNotFoundException("sprintbacklog not found"));
 
