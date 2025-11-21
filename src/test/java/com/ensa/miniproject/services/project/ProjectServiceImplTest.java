@@ -119,7 +119,7 @@ class ProjectServiceImplTest {
 
         when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(projectMapper.fromEntity(project)).thenReturn(updateDto);
-
+        when(projectRepository.save(any(Project.class))).thenReturn(project);
         // Act
         ProjectDTO result = projectService.updateProject(updateDto);
 
@@ -137,7 +137,7 @@ class ProjectServiceImplTest {
 
         when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(projectMapper.fromEntity(project)).thenReturn(partialDto);
-
+        when(projectRepository.save(any(Project.class))).thenReturn(project);
         // Act
         projectService.updateProject(partialDto);
 
