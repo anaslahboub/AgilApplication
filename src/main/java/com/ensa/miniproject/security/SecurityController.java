@@ -28,6 +28,7 @@ public class SecurityController {
 
     @PostMapping(   "/login")
     public Map<String, String> login(@RequestBody LoginRequest request) {
+        log.info("LOGIN CALLED for user: {}", request.username());
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),

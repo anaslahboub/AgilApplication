@@ -12,7 +12,6 @@ services:
       - "3306:3306"              # Mappe le port 3306 du conteneur vers localhost:3306
     volumes:
       - mysql_data:/var/lib/mysql # Pour garder les données même si tu éteins le conteneur
-    # Commande pour éviter les erreurs d'authentification avec certains drivers Java
     command: --default-authentication-plugin=mysql_native_password
 
   # Interface Graphique (Optionnel mais très utile)
